@@ -27,8 +27,7 @@
         /* Floating particles effect */
         .particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
         .particle{position:absolute;width:3px;height:3px;background:var(--accent);border-radius:50%;opacity:0.4;box-shadow:0 0 10px var(--accent);animation:float 20s infinite}
-        @keyframes float{0%,100%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:0.4}90%{opacity:0.4}100%{transform:translateY(-100vh) translateX(100px);opacity:0}}
-        
+       
         /* Animated gradient orbs */
         .orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:0.3;pointer-events:none;z-index:-1;animation:orbFloat 20s ease-in-out infinite}
         .orb1{top:10%;left:10%;width:300px;height:300px;background:radial-gradient(circle,var(--accent),transparent);animation-delay:0s}
@@ -407,24 +406,45 @@
         .bottom-nav{animation:fadeIn 1s ease-out 0.2s both}
         #p-cont{animation:fadeIn 1.2s ease-out 0.4s both}
 /* 그리드 모드 스타일 */
-body.grid-mode #main-scroller { overflow-y: auto; }
+/* 그리드 모드 스타일 보강 */
+body.grid-mode #main-scroller { 
+    overflow-y: auto !important; 
+    -webkit-overflow-scrolling: touch;
+}
+
 body.grid-mode #sphere-scene {
-    animation: none!important; transform: none!important;
-    position: relative!important; top: 0!important; left: 0!important;
-    width: 100%!important; height: auto!important;
-    display: grid!important;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr))!important;
-    gap: 15px!important; padding: 80px 20px 180px 20px!important;
-    box-sizing: border-box!important; filter: none!important;
+    animation: none !important; 
+    transform: none !important;
+    position: relative !important; 
+    top: 0 !important; 
+    left: 0 !important;
+    width: 100% !important; 
+    height: auto !important;
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 15px !important; 
+    padding: 100px 20px 200px 20px !important;
+    box-sizing: border-box !important; 
+    filter: none !important;
 }
+
 body.grid-mode .photo-card {
-    position: relative!important; left: 0!important; top: 0!important;
-    width: 100%!important; height: auto!important;
-    aspect-ratio: 1/1; transform: none!important;
-    filter: brightness(1); box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1/1.2 !important; /* 카드 비율 유지 */
+    transform: none !important; /* 구체 형태 transform 무효화 */
+    filter: brightness(1) saturate(1) !important;
+    opacity: 1 !important;
+    z-index: 1 !important;
 }
+
 @media (max-width: 768px) {
-    body.grid-mode #sphere-scene { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr))!important; }
+    body.grid-mode #sphere-scene { 
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important; 
+    }
 }
 
 #heart-btn {
@@ -451,6 +471,50 @@ body.grid-mode .photo-card {
 }
 
 #heart-btn:hover { transform: scale(1.1) translateY(-3px); }
+/* 추가할 부분 */
+@keyframes float {
+    0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.4;
+    }
+    90% {
+        opacity: 0.4;
+    }
+    100% {
+        transform: translateY(-10vh) translateX(100px);
+        opacity: 0;
+    }
+}
+/* 1. 구체 회전 애니메이션 정의 추가 */
+@keyframes rotateEarth {
+    from { transform: translate(-50%, -50%) rotateX(-5deg) rotateY(0deg); }
+    to { transform: translate(-50%, -50%) rotateX(-5deg) rotateY(360deg); }
+}
+
+/* 2. sphere-scene에 애니메이션 적용 */
+#sphere-scene {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+    /* 아래 애니메이션 한 줄 추가 */
+    animation: rotateEarth 60s linear infinite; 
+    transition: all .8s;
+    filter: drop-shadow(0 0 40px rgba(255, 77, 109, 0.3));
+}
+
+/* 3. 파티클 애니메이션 수정 (old.html과 동일하게) */
+@keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+    10% { opacity: 0.3; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-100vh) translateX(80px); opacity: 0; }
+}
     </style>
 </head>
 <body>
@@ -522,48 +586,68 @@ body.grid-mode .photo-card {
 
         new Granim({element:'#canvas-bg',direction:'top-bottom',states:{"default-state":{gradients:[['#050507','#1a0f2e'],['#0f172a','#050507']],transitionSpeed:8000}}});
 
-        async function loadG(){
-            try{
-                const res=await fetch('images/photos.json'), data=await res.json(), photos=data["2026_02"]||[];
-                const count=photos.length;
-                const radius=window.innerWidth<768?220:450;
-                
-                photos.forEach((f,i)=>{
-                    const img=document.createElement('div');
-                    img.className='photo-card';
-                    
-                    const phi = Math.acos(-1 + (2 * i) / count);
-                    const theta = Math.sqrt(count * Math.PI) * phi;
-                    const x = radius * Math.sin(phi) * Math.cos(theta);
-                    const y = radius * Math.sin(phi) * Math.sin(theta);
-                    const z = radius * Math.cos(phi);
-                    
-                    img.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${theta}rad) rotateX(${phi-Math.PI/2}rad)`;
-img.dataset.sphereTransform = img.style.transform; // 이 줄을 추가하세요
-                    img.innerHTML = `<img src="images/2026-02/${f}" loading="lazy">`;
-                    
-                    img.onclick=(e)=>{
-                        e.stopPropagation();
-                        openM(`images/2026-02/${f}`);
-                        if(audio.paused) toggleP();
-                    };
-                    
-                    scene.appendChild(img);
-                    cards.push(img);
-                });
-            }catch(e){console.error(e)}
-        }
+// 1. loadG 함수 내에서 transform 저장 부분 확인
+async function loadG() {
+    try {
+        const res = await fetch('images/photos.json'), 
+              data = await res.json(), 
+              photos = data["2026_02"] || [];
+        const count = photos.length;
+        const radius = window.innerWidth < 768 ? 220 : 450;
+        
+        // 기존 내용 삭제 후 초기화 (중복 방지)
+        scene.innerHTML = '';
+        cards = [];
+
+        photos.forEach((f, i) => {
+            const img = document.createElement('div');
+            img.className = 'photo-card';
+            
+            const phi = Math.acos(-1 + (2 * i) / count);
+            const theta = Math.sqrt(count * Math.PI) * phi;
+            const x = radius * Math.sin(phi) * Math.cos(theta);
+            const y = radius * Math.sin(phi) * Math.sin(theta);
+            const z = radius * Math.cos(phi);
+            
+            // 구체 위치 계산값 저장
+            const transformValue = `translate3d(${x}px,${y}px,${z}px) rotateY(${theta}rad) rotateX(${phi - Math.PI / 2}rad)`;
+            img.style.transform = transformValue;
+            img.dataset.sphereTransform = transformValue; // 위치값 백업
+            
+            img.innerHTML = `<img src="images/2026-02/${f}" loading="lazy">`;
+            
+            img.onclick = (e) => {
+                e.stopPropagation();
+                openM(`images/2026-02/${f}`);
+                if (audio.paused) toggleP();
+            };
+            
+            scene.appendChild(img);
+            cards.push(img);
+        });
+    } catch (e) { console.error("Gallery Load Error:", e); }
+}
+
+// 2. 하트 버튼 클릭 핸들러 (그리드 전환)
 document.getElementById('heart-btn').onclick = () => {
     const isGrid = document.body.classList.toggle('grid-mode');
     const scroller = document.getElementById('main-scroller');
     
+    // 그리드 모드일 때 애니메이션 정지/재생 제어
+    scene.style.animation = isGrid ? 'none' : 'rotateEarth 60s linear infinite';
+    
     cards.forEach(c => {
-        c.style.transform = isGrid ? 'none' : c.dataset.sphereTransform;
+        if (isGrid) {
+            c.style.transform = 'none';
+        } else {
+            c.style.transform = c.dataset.sphereTransform;
+        }
     });
     
-    scroller.scrollTop = 0;
-    if(audio.paused) toggleP();
+    if (isGrid) scroller.scrollTo({ top: 0, behavior: 'smooth' });
+    if (audio.paused) toggleP();
 };
+
         document.getElementById('ai-rank-btn').onclick=()=>{
             const ov=document.getElementById('proc-ov'), bar=document.getElementById('p-bar');
             ov.style.display='flex'; bar.style.width='0%';
