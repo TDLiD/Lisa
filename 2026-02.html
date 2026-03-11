@@ -37,15 +37,18 @@
         
         /* 3D 갤러리 관련 스타일 - Enhanced */
         #main-scroller{position:absolute;inset:0;overflow:hidden;perspective:2500px;z-index:1}
-        #sphere-scene{
-            position:absolute;top:50%;left:50%;width:0;height:0;
-            transform-style:preserve-3d;
-            animation:rotateSphere 60s linear infinite;
-            transition:all .8s;
-            filter:drop-shadow(0 0 30px rgba(0,255,163,0.3));
-        }
-        @keyframes rotateSphere{from{transform:translate(-50%,-50%) rotateX(-5deg) rotateY(0deg)}to{transform:translate(-50%,-50%) rotateX(-5deg) rotateY(360deg)}}
-        
+#sphere-scene{
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    transform-style:preserve-3d;
+    transition:all .8s;
+    overflow:hidden;
+}
+@keyframes rotateSphere {
+    from { transform: translate(-50%, -50%) rotateX(80deg) rotateY(0deg); }
+    to   { transform: translate(-50%, -50%) rotateX(80deg) rotateY(360deg); }
+}        
         /* 카드 크기 반응형 수정 with 3D enhancements */
         .photo-card{
             position:absolute;
@@ -61,14 +64,23 @@
             backface-visibility:hidden;
             box-shadow:0 10px 30px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,255,163,0.1) inset;
             transform-style:preserve-3d;
-        }
+    left:0; top:0;        /* top/left 기준점 초기화 */
 
-        @media (max-width: 768px) {
-            .photo-card {
-                width: 100px; height: 130px;
-                left: -50px; top: -65px;
-            }
+    animation:riseUp linear infinite;  /* ← 애니메이션 적용 */
         }
+@keyframes riseUp{
+    from { transform:translateY(calc(100vh + 200px)); opacity:0; }
+    10%  { opacity:1; }
+    90%  { opacity:1; }
+    to   { transform:translateY(calc(-100vh - 200px)); opacity:0; }
+}
+
+@media (max-width: 768px) {
+    .photo-card {
+        width: 100px; height: 130px;
+        left: 0; top: 0;
+    }
+}
 
         /* 3D glow ring effect */
         .photo-card::before{
@@ -488,25 +500,7 @@ body.grid-mode .photo-card {
         opacity: 0;
     }
 }
-/* 1. 구체 회전 애니메이션 정의 추가 */
-@keyframes rotateEarth {
-    from { transform: translate(-50%, -50%) rotateX(-5deg) rotateY(0deg); }
-    to { transform: translate(-50%, -50%) rotateX(-5deg) rotateY(360deg); }
-}
 
-/* 2. sphere-scene에 애니메이션 적용 */
-#sphere-scene {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    transform-style: preserve-3d;
-    /* 아래 애니메이션 한 줄 추가 */
-    animation: rotateEarth 60s linear infinite; 
-    transition: all .8s;
-    filter: drop-shadow(0 0 40px rgba(255, 77, 109, 0.3));
-}
 
 /* 3. 파티클 애니메이션 수정 (old.html과 동일하게) */
 @keyframes float {
@@ -593,7 +587,7 @@ async function loadG() {
               data = await res.json(), 
               photos = data["2026_02"] || [];
         const count = photos.length;
-        const radius = window.innerWidth < 768 ? 220 : 450;
+        const radius = window.innerWidth < 768 ? 180 : 380;
         
         // 기존 내용 삭제 후 초기화 (중복 방지)
         scene.innerHTML = '';
@@ -603,16 +597,17 @@ async function loadG() {
             const img = document.createElement('div');
             img.className = 'photo-card';
             
-            const phi = Math.acos(-1 + (2 * i) / count);
-            const theta = Math.sqrt(count * Math.PI) * phi;
-            const x = radius * Math.sin(phi) * Math.cos(theta);
-            const y = radius * Math.sin(phi) * Math.sin(theta);
-            const z = radius * Math.cos(phi);
-            
-            // 구체 위치 계산값 저장
-            const transformValue = `translate3d(${x}px,${y}px,${z}px) rotateY(${theta}rad) rotateX(${phi - Math.PI / 2}rad)`;
-            img.style.transform = transformValue;
-            img.dataset.sphereTransform = transformValue; // 위치값 백업
+const cols = window.innerWidth < 768 ? 3 : 5;
+const cardW = window.innerWidth < 768 ? 110 : 150;
+const col = i % cols;
+const leftPct = (col / cols) * 90 + 3;   // 3~93% 분산
+const duration = 12 + Math.random() * 14; // 12~26초
+const delay = -(Math.random() * duration); // 처음부터 고르게 분포
+
+img.style.left = leftPct + '%';
+img.style.animationDuration = duration + 's';
+img.style.animationDelay = delay + 's';
+img.dataset.sphereTransform = '';          // 그리드 복귀용 백업
             
             img.innerHTML = `<img src="images/2026-02/${f}" loading="lazy">`;
             
@@ -633,16 +628,10 @@ document.getElementById('heart-btn').onclick = () => {
     const isGrid = document.body.classList.toggle('grid-mode');
     const scroller = document.getElementById('main-scroller');
     
-    // 그리드 모드일 때 애니메이션 정지/재생 제어
-    scene.style.animation = isGrid ? 'none' : 'rotateEarth 60s linear infinite';
-    
-    cards.forEach(c => {
-        if (isGrid) {
-            c.style.transform = 'none';
-        } else {
-            c.style.transform = c.dataset.sphereTransform;
-        }
-    });
+cards.forEach(c => {
+    c.style.animation = isGrid ? 'none' : '';
+    c.style.transform = isGrid ? 'none' : '';
+});
     
     if (isGrid) scroller.scrollTo({ top: 0, behavior: 'smooth' });
     if (audio.paused) toggleP();
