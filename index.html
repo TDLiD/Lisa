@@ -212,7 +212,7 @@
         .heart-old{background-image:url('images/old/image-035.png');color:var(--heart-red)}
         .heart-feb{background-image:url('images/2026-02/image-018.jpg');color:var(--accent)}
         .heart-mar{background-image:url('images/2026-03/image-013.jpg');color:var(--cyan)}
-
+.heart-apr{background-image:url('images/2026-04/image-05.jpg');color:var(--blue)}
         .heart-label{
             font-family:'Space Mono',monospace;
             font-size:10px;
@@ -328,13 +328,13 @@
         .s-item.active{opacity:1;background:rgba(0,255,163,.15);color:var(--accent)}
 
         /* ── RESPONSIVE ── */
-        @media(max-width:768px){
-            .heart-container{
-                flex-direction:column;
-                gap:20px;
-                top:44%;
-                padding:0 16px;
-            }
+@media(max-width:768px){
+    .heart-container{
+        flex-direction:column;
+        gap:16px;  /* 20px → 16px */
+        top:42%;   /* 44% → 42% */
+        padding:0 16px;
+    }
             .heart-visual{
                 width:160px!important;
                 height:160px!important;
@@ -395,6 +395,19 @@
             .lisa-text{font-size:28px}
             #p-cont{bottom:100px;width:220px;right:10px;left:auto}
         }
+
+}
+@media(min-width:769px) and (max-width:1024px){
+    .heart-container{
+        flex-wrap:wrap;
+        gap:30px;
+        max-width:600px;
+    }
+    .heart-visual{
+        width:160px!important;
+        height:160px!important;
+    }
+}
     </style>
 </head>
 <body>
@@ -430,6 +443,10 @@
             <div class="heart-visual heart-mar"></div>
             <div class="heart-label" style="color:var(--cyan)">2026 MARCH</div>
         </a>
+<a href="2026-04.html" class="heart-link">
+    <div class="heart-visual heart-apr"></div>
+    <div class="heart-label" style="color:var(--blue)">2026 APRIL</div>
+</a>
     </div>
 
     <div class="bottom-shelf">
