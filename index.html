@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
     <title>2026 Future Hub</title>
-    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-
     <script src="music/music_list.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@800;900&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <style>
         :root{
             --accent:#00ffa3;
@@ -329,89 +328,187 @@
         .s-item:hover{opacity:0.8;background:rgba(255,255,255,0.05)}
         .s-item.active{opacity:1;background:rgba(0,255,163,.15);color:var(--accent)}
 
-        /* ── RESPONSIVE ── */
-@media(max-width:768px){
-    .heart-container{
-        flex-direction:column;
-        gap:16px;  /* 20px → 16px */
-        top:42%;   /* 44% → 42% */
-        padding:0 16px;
+/* ── RESPONSIVE ── */
+
+/* 1. 일반 모바일 & 태블릿 (768px 이하) */
+@media(max-width: 768px) {
+    .heart-container {
+        flex-direction: column;
+        gap: 16px;
+        top: 42%;
+        padding: 0 16px;
     }
-            .heart-visual{
-                width:160px!important;
-                height:160px!important;
-                margin-bottom:10px;
-            }
-            .heart-link::before{
-                width:190px!important;
-                height:190px!important;
-            }
-            .heart-label{
-                font-size:9px;
-                padding:6px 12px;
-                letter-spacing:2px;
-            }
-            .ring-1{width:300px;height:300px;margin:-150px 0 0 -150px}
-            .ring-2{width:440px;height:440px;margin:-220px 0 0 -220px}
-            .ring-3{width:580px;height:580px;margin:-290px 0 0 -290px}
-            #p-cont{
-                width:calc(100vw - 32px);
-                right:16px;left:16px;
-                bottom:130px;
-            }
-            .hud-bl,.hud-br{bottom:78px}
-        }
-
-        @media(max-width:480px){
-            .heart-container{
-                gap:16px;
-                top:42%;
-            }
-            .heart-visual{
-                width:130px!important;
-                height:130px!important;
-            }
-            .heart-link::before{
-                width:155px!important;
-                height:155px!important;
-            }
-        }
-
-        /* Landscape mobile */
-        @media(max-height:500px) and (orientation:landscape){
-            .heart-container{
-                flex-direction:row;
-                top:45%;
-                gap:20px;
-            }
-            .heart-visual{
-                width:110px!important;
-                height:110px!important;
-            }
-            .heart-link::before{
-                width:130px!important;
-                height:130px!important;
-            }
-            .heart-label{font-size:8px;padding:4px 10px}
-            .bottom-shelf{height:50px}
-            .lisa-text{font-size:28px}
-            #p-cont{bottom:100px;width:220px;right:10px;left:auto}
-        }
-
+    .heart-visual {
+        width: 160px !important;
+        height: 160px !important;
+        margin-bottom: 10px;
+    }
+    .heart-link::before {
+        width: 190px !important;
+        height: 190px !important;
+    }
+    .heart-label {
+        font-size: 9px;
+        padding: 6px 12px;
+        letter-spacing: 2px;
+    }
+    .ring-1 { width: 300px; height: 300px; margin: -150px 0 0 -150px; }
+    .ring-2 { width: 440px; height: 440px; margin: -220px 0 0 -220px; }
+    .ring-3 { width: 580px; height: 580px; margin: -290px 0 0 -290px; }
+    
+    #p-cont {
+        width: calc(100vw - 32px);
+        right: 16px;
+        left: 16px;
+        bottom: 130px;
+    }
+    .hud-bl, .hud-br { bottom: 78px; }
 }
-@media(min-width:769px) and (max-width:1024px){
-    .heart-container{
-        flex-wrap:wrap;
-        gap:30px;
-        max-width:600px;
+
+/* 2. 초소형 모바일 (480px 이하) */
+@media(max-width: 480px) {
+    .heart-container {
+        gap: 16px;
+        top: 42%;
     }
-    .heart-visual{
-        width:160px!important;
-        height:160px!important;
+    .heart-visual {
+        width: 130px !important;
+        height: 130px !important;
     }
+    .heart-link::before {
+        width: 155px !important;
+        height: 155px !important;
+    }
+}
+
+/* 3. 가로 모드 모바일 (높이가 낮을 때) */
+@media(max-height: 500px) and (orientation: landscape) {
+    .heart-container {
+        flex-direction: row;
+        top: 45%;
+        gap: 20px;
+    }
+    .heart-visual {
+        width: 110px !important;
+        height: 110px !important;
+    }
+    .heart-link::before {
+        width: 130px !important;
+        height: 130px !important;
+    }
+    .heart-label { font-size: 8px; padding: 4px 10px; }
+    .bottom-shelf { height: 50px; }
+    .lisa-text { font-size: 28px; }
+    #p-cont { bottom: 100px; width: 220px; right: 10px; left: auto; }
+}
+
+/* 4. 중형 태블릿 (769px ~ 1024px) */
+@media(min-width: 769px) and (max-width: 1024px) {
+    .heart-container {
+        flex-wrap: wrap;
+        gap: 30px;
+        max-width: 600px;
+    }
+    .heart-visual {
+        width: 160px !important;
+        height: 160px !important;
+    }
+}
+/* 스타일 하단부에 추가되어 있던 #p-cont 수정 및 버튼 숨김 코드를 아래로 대체하세요 */
+
+#p-cont {
+    position: fixed;
+    bottom: 140px; /* 위치 조정 */
+    right: 16px;
+    width: 260px;
+    background: linear-gradient(135deg, rgba(2,6,23,0.97), rgba(15,23,42,0.95));
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(0,255,163,0.3);
+    border-radius: 24px;
+    z-index: 10000;
+    padding: 16px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+    touch-action: none;
+    cursor: grab;
+}
+
+/* 숨겨졌던 요소들 다시 표시 */
+.ctrls { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 8px; 
+    margin-bottom: 12px; 
+}
+.ctrls button { 
+    display: block !important; /* 다시 보이게 수정 */
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,.12);
+    color: white;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+}
+.ctrls button:hover { background: var(--accent); color: black; }
+.s-list { 
+    display: block !important; /* 리스트 다시 보이게 수정 */
+    max-height: 80px; 
+    overflow-y: auto; 
+    background: rgba(0,0,0,.3); 
+    border-radius: 10px; 
+    padding: 6px; 
+}
+/* 스피커 버튼 스타일 */
+.bg-music-btn {
+    position: fixed;
+    bottom: 90px; /* LISA 텍스트 트랙 바로 위 위치 */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10001;
+    background: rgba(0, 255, 163, 0.1);
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 15px rgba(0, 255, 163, 0.3);
+}
+
+.bg-music-btn:hover {
+    background: var(--accent);
+    box-shadow: 0 0 25px var(--accent);
+}
+
+.bg-music-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--accent);
+    transition: fill 0.3s;
+}
+
+.bg-music-btn:hover svg {
+    fill: black;
+}
+
+/* 음악 정지 상태일 때 스타일 */
+.bg-music-btn.muted {
+    border-color: #666;
+    opacity: 0.6;
+}
+
+.bg-music-btn.muted svg {
+    fill: #666;
 }
     </style>
+
 </head>
+
 <body>
 
     <!-- 4D Background Layers -->
@@ -464,19 +561,28 @@
         </div>
     </div>
 
-    <div id="p-cont" class="paused">
-        <div class="p-header">
-            <div class="eq"><span></span><span></span><span></span></div>
-            <div id="t-name">READY</div>
-        </div>
-        <div class="ctrls">
-            <button onclick="prevT()">◁◁</button>
-            <button id="p-btn" onclick="toggleP()">PLAY</button>
-            <button onclick="nextT()">▷▷</button>
-        </div>
-        <div class="s-list" id="pl"></div>
-        <audio id="audio"></audio>
+<audio id="bgAudio" loop>
+    <source src="music/Ega.mp3" type="audio/mpeg">
+</audio>
+
+<button id="musicToggle" class="bg-music-btn" title="Toggle Music">
+    <svg id="speakerIcon" viewBox="0 0 24 24">
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+    </svg>
+</button>
+
+<div id="p-cont" class="paused">
+    <div class="p-header">
+        <div class="eq"><span></span><span></span><span></span></div>
+        <div id="t-name">preparing...</div>
     </div>
+    <div class="ctrls">
+        <button onclick="prevT()">PREV</button>
+        <button id="p-btn" onclick="toggleP()">PLAY</button>
+        <button onclick="nextT()">NEXT</button>
+    </div>
+    <div class="s-list" id="pl"></div> <audio id="audio" loop></audio>
+</div>
 
     <script>
         /* ── 4D CANVAS: fluid connected dots ── */
@@ -596,19 +702,41 @@
             }
         }
 
-        /* ── MUSIC PLAYER ── */
-        const audio=document.getElementById('audio');
-        const pBtn=document.getElementById('p-btn');
-        const tName=document.getElementById('t-name');
-        const plEl=document.getElementById('pl');
-        const pCont=document.getElementById('p-cont');
-        const tracks=typeof EXTERNAL_TRACKS!=='undefined'?EXTERNAL_TRACKS:[];
-        let cIdx=0;
+/* 스크립트 내의 MUSIC PLAYER 로직을 아래와 같이 수정하세요 */
 
-        function initP(){
-            plEl.innerHTML=tracks.map((t,i)=>`<div class="s-item ${i===cIdx?'active':''}" onclick="loadT(${i})">${i+1}. ${t.replace('.mp3','')}</div>`).join('');
-            loadT(0,false);
+const audio = document.getElementById('audio');
+const pBtn = document.getElementById('p-btn');
+const tName = document.getElementById('t-name');
+const plEl = document.getElementById('pl');
+const pCont = document.getElementById('p-cont');
+
+// music_list.js에 EXTERNAL_TRACKS가 있으면 그것을 사용, 없으면 Ega.mp3 사용
+const tracks = (typeof EXTERNAL_TRACKS !== 'undefined' && EXTERNAL_TRACKS.length > 0) 
+               ? EXTERNAL_TRACKS 
+               : ["Ega.mp3"];
+let cIdx = 0;
+
+function initP() {
+    if (tracks.length > 0) {
+        // 플레이리스트 UI 생성 복구
+        plEl.innerHTML = tracks.map((t, i) => 
+            `<div class="s-item ${i === cIdx ? 'active' : ''}" onclick="loadT(${i})">
+                ${t.replace('.mp3', '').replace(/_/g, ' ')}
+            </div>`
+        ).join('');
+        loadT(0, false);
+    }
+
+    // 사용자 상호작용 시 첫 재생 허용
+    window.addEventListener('click', () => {
+        if (audio.paused && audio.src) {
+            // toggleP(); // 필요 시 자동재생 활성화
         }
+    }, { once: true });
+}
+
+// 나머지 loadT, toggleP, nextT, prevT 함수는 기존 소스 코드를 그대로 유지하시면 됩니다.
+
         function loadT(idx,a=true){
             if(!tracks.length)return;
             cIdx=idx;
@@ -648,6 +776,45 @@
         window.addEventListener('touchmove',oD,{passive:false});
         window.addEventListener('mouseup',eD);
         window.addEventListener('touchend',eD);
+
+/* 배경 음악 컨트롤 로직 */
+(function() {
+    const bgAudio = document.getElementById('bgAudio');
+    const musicBtn = document.getElementById('musicToggle');
+
+    // 재생/일시정지 토글 함수
+    function toggleMusic() {
+        if (bgAudio.paused) {
+            bgAudio.play().catch(e => console.log("재생 실패:", e));
+            musicBtn.classList.remove('muted');
+        } else {
+            bgAudio.pause();
+            musicBtn.classList.add('muted');
+        }
+    }
+
+    musicBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        toggleMusic();
+    });
+
+    // 핵심: 페이지 로드 후 사용자가 "어디든 클릭"하면 자동 재생 실행
+    const autoPlayStarter = () => {
+        bgAudio.play().then(() => {
+            musicBtn.classList.remove('muted');
+            // 재생에 성공하면 클릭 이벤트 제거
+            window.removeEventListener('click', autoPlayStarter);
+            window.removeEventListener('touchstart', autoPlayStarter);
+        }).catch(error => {
+            console.log("브라우저 차단으로 대기 중...");
+        });
+    };
+
+    window.addEventListener('click', autoPlayStarter);
+    window.addEventListener('touchstart', autoPlayStarter); // 모바일 대응
+
+    bgAudio.volume = 0.5;
+})();
 
         window.onload=()=>{
             createParticles();
