@@ -30,124 +30,291 @@
             perspective:1200px;
         }
 
-        /* ── 4D LAYERED BACKGROUND ── */
-        #bg-canvas{
-            position:fixed;top:0;left:0;
-            width:100%;height:100%;
-            z-index:0;pointer-events:none;
-        }
+/* ── 4D LAYERED BACKGROUND ── */
+#bg-canvas{
+    position:fixed;top:0;left:0;
+    width:100%;height:100%;
+    z-index:0;pointer-events:none;
+    filter: brightness(1.1) contrast(1.1);
+}
 
-        /* Deep space grid floor */
-        .grid-floor{
-            position:fixed;
-            bottom:0;left:50%;
-            transform:translateX(-50%);
-            width:200%;height:60%;
-            background:
-                linear-gradient(rgba(0,255,163,0.06) 1px,transparent 1px),
-                linear-gradient(90deg,rgba(0,255,163,0.06) 1px,transparent 1px);
-            background-size:60px 60px;
-            transform-origin:bottom center;
-            transform:translateX(-50%) rotateX(70deg);
-            z-index:1;
-            pointer-events:none;
-            animation:gridPulse 8s ease-in-out infinite;
-        }
-        @keyframes gridPulse{
-            0%,100%{opacity:0.4}
-            50%{opacity:0.8}
-        }
+/* Deep space grid floor - 3D perspective */
+.grid-floor{
+    position:fixed;
+    bottom:0;left:50%;
+    transform:translateX(-50%);
+    width:200%;height:60%;
+    background:
+        linear-gradient(rgba(0,255,163,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(0,255,163,0.08) 1px,transparent 1px),
+        radial-gradient(ellipse at center, rgba(0,255,163,0.15) 0%, transparent 70%);
+    background-size:60px 60px, 60px 60px, 100% 100%;
+    transform-origin:bottom center;
+    transform:translateX(-50%) rotateX(75deg) perspective(1200px);
+    z-index:1;
+    pointer-events:none;
+    animation:gridPulse 8s ease-in-out infinite, gridShift 20s ease-in-out infinite;
+    box-shadow: 
+        inset 0 -100px 200px rgba(0,255,163,0.1),
+        inset 0 0 100px rgba(34,211,238,0.08);
+}
+@keyframes gridPulse{
+    0%,100%{opacity:0.3}
+    50%{opacity:0.7}
+}
+@keyframes gridShift{
+    0%, 100% { background-position: 0 0, 0 0, 0 0; }
+    50% { background-position: 30px 30px, 30px 30px, 0 0; }
+}
 
-        /* Orbiting energy rings */
-        .orbit-ring{
-            position:fixed;
-            border-radius:50%;
-            border:1px solid;
-            pointer-events:none;
-            z-index:1;
-            top:50%;left:50%;
-            transform-origin:center center;
-        }
-        .ring-1{
-            width:500px;height:500px;
-            margin:-250px 0 0 -250px;
-            border-color:rgba(0,255,163,0.15);
-            transform:rotateX(70deg) rotateZ(0deg);
-            animation:orbitSpin 20s linear infinite;
-            box-shadow:0 0 30px rgba(0,255,163,0.1) inset;
-        }
-        .ring-2{
-            width:700px;height:700px;
-            margin:-350px 0 0 -350px;
-            border-color:rgba(167,139,250,0.12);
-            transform:rotateX(65deg) rotateZ(30deg);
-            animation:orbitSpin 35s linear infinite reverse;
-        }
-        .ring-3{
-            width:900px;height:900px;
-            margin:-450px 0 0 -450px;
-            border-color:rgba(34,211,238,0.08);
-            transform:rotateX(72deg) rotateZ(-20deg);
-            animation:orbitSpin 50s linear infinite;
-        }
-        @keyframes orbitSpin{
-            from{transform:rotateX(70deg) rotateZ(0deg)}
-            to{transform:rotateX(70deg) rotateZ(360deg)}
-        }
+/* Orbiting energy rings - Enhanced 3D */
+.orbit-ring{
+    position:fixed;
+    border-radius:50%;
+    border:1px solid;
+    pointer-events:none;
+    z-index:1;
+    top:50%;left:50%;
+    transform-origin:center center;
+    filter: drop-shadow(0 0 20px currentColor);
+    box-shadow: 0 0 40px currentColor inset;
+}
+.ring-1{
+    width:500px;height:500px;
+    margin:-250px 0 0 -250px;
+    border-color:rgba(0,255,163,0.3);
+    transform:rotateX(75deg) rotateZ(0deg) perspective(1500px);
+    animation:orbitSpin 20s linear infinite, ringFloat 6s ease-in-out infinite;
+    box-shadow:
+        0 0 30px rgba(0,255,163,0.2) inset,
+        0 0 50px rgba(0,255,163,0.15),
+        inset -40px -40px 80px rgba(0,255,163,0.08);
+}
+.ring-2{
+    width:700px;height:700px;
+    margin:-350px 0 0 -350px;
+    border-color:rgba(167,139,250,0.25);
+    transform:rotateX(70deg) rotateZ(30deg) perspective(1500px);
+    animation:orbitSpin 35s linear infinite reverse, ringFloat 7s ease-in-out infinite;
+    box-shadow:
+        0 0 40px rgba(167,139,250,0.2) inset,
+        0 0 60px rgba(167,139,250,0.12),
+        inset -50px -50px 100px rgba(167,139,250,0.06);
+}
+.ring-3{
+    width:900px;height:900px;
+    margin:-450px 0 0 -450px;
+    border-color:rgba(34,211,238,0.2);
+    transform:rotateX(72deg) rotateZ(-20deg) perspective(1500px);
+    animation:orbitSpin 50s linear infinite, ringFloat 8s ease-in-out infinite;
+    box-shadow:
+        0 0 50px rgba(34,211,238,0.15) inset,
+        0 0 70px rgba(34,211,238,0.1),
+        inset -60px -60px 120px rgba(34,211,238,0.05);
+}
+@keyframes orbitSpin{
+    from{transform:rotateX(70deg) rotateZ(0deg) perspective(1500px)}
+    to{transform:rotateX(70deg) rotateZ(360deg) perspective(1500px)}
+}
+@keyframes ringFloat{
+    0%, 100% { transform: translateY(0) rotateX(70deg) rotateZ(0deg) perspective(1500px); }
+    50% { transform: translateY(-20px) rotateX(70deg) rotateZ(180deg) perspective(1500px); }
+}
 
-        /* Gradient nebula orbs */
-        .nebula{
-            position:fixed;
-            border-radius:50%;
-            filter:blur(80px);
-            pointer-events:none;
-            z-index:1;
-            animation:nebulaFloat 25s ease-in-out infinite;
-        }
-        .nb1{width:600px;height:600px;top:-10%;left:-10%;background:radial-gradient(circle,rgba(0,255,163,0.12),transparent 70%);animation-delay:0s}
-        .nb2{width:700px;height:700px;bottom:-15%;right:-15%;background:radial-gradient(circle,rgba(167,139,250,0.12),transparent 70%);animation-delay:-8s}
-        .nb3{width:400px;height:400px;top:40%;left:40%;background:radial-gradient(circle,rgba(59,130,246,0.1),transparent 70%);animation-delay:-15s}
-        @keyframes nebulaFloat{
-            0%,100%{transform:translate(0,0) scale(1)}
-            33%{transform:translate(40px,-40px) scale(1.1)}
-            66%{transform:translate(-30px,30px) scale(0.9)}
-        }
+/* Gradient nebula orbs - Enhanced */
+.nebula{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(100px) brightness(1.2);
+    pointer-events:none;
+    z-index:1;
+    animation:nebulaFloat 25s ease-in-out infinite;
+    box-shadow: 0 0 200px currentColor;
+}
+.nb1{
+    width:600px;height:600px;top:-10%;left:-10%;
+    background:radial-gradient(circle at 30% 30%, rgba(0,255,163,0.25) 0%, rgba(0,255,163,0.08) 40%, transparent 70%);
+    animation-delay:0s;
+    filter: blur(120px) brightness(1.3) drop-shadow(0 0 80px rgba(0,255,163,0.2));
+}
+.nb2{
+    width:700px;height:700px;bottom:-15%;right:-15%;
+    background:radial-gradient(circle at 70% 70%, rgba(167,139,250,0.2) 0%, rgba(167,139,250,0.08) 40%, transparent 70%);
+    animation-delay:-8s;
+    filter: blur(120px) brightness(1.2) drop-shadow(0 0 100px rgba(167,139,250,0.15));
+}
+.nb3{
+    width:400px;height:400px;top:40%;left:40%;
+    background:radial-gradient(circle at 50% 50%, rgba(59,130,246,0.2) 0%, rgba(59,130,246,0.05) 40%, transparent 70%);
+    animation-delay:-15s;
+    filter: blur(100px) brightness(1.1) drop-shadow(0 0 80px rgba(59,130,246,0.15));
+}
+@keyframes nebulaFloat{
+    0%,100%{transform:translate(0,0) scale(1) rotateZ(0deg)}
+    25%{transform:translate(60px,-60px) scale(1.15) rotateZ(45deg)}
+    50%{transform:translate(0,0) scale(1) rotateZ(90deg)}
+    75%{transform:translate(-60px,60px) scale(1.1) rotateZ(135deg)}
+}
 
-        /* Scan beam */
-        .scan-beam{
-            position:fixed;
-            top:0;left:-100%;
-            width:3px;height:100%;
-            background:linear-gradient(to bottom,transparent,rgba(0,255,163,0.4),rgba(0,255,163,0.8),rgba(0,255,163,0.4),transparent);
-            z-index:2;
-            pointer-events:none;
-            animation:scanBeam 12s linear infinite;
-            box-shadow:0 0 20px rgba(0,255,163,0.3);
-        }
-        @keyframes scanBeam{
-            0%{left:-1%}100%{left:101%}
-        }
+/* Cosmic dust particles */
+.cosmic-dust{
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    pointer-events:none;
+    z-index:1;
+    overflow:hidden;
+}
+.dust-particle{
+    position:absolute;
+    background:radial-gradient(circle, rgba(0,255,163,0.4), transparent 70%);
+    border-radius:50%;
+    opacity:0;
+    animation:dustFloat 20s infinite linear;
+}
+@keyframes dustFloat{
+    0%{
+        opacity:0;
+        transform: translate(0, 0) scale(1);
+    }
+    10%{
+        opacity:0.4;
+    }
+    90%{
+        opacity:0.2;
+    }
+    100%{
+        opacity:0;
+        transform: translate(var(--tx), -100vh) scale(0.3) rotateZ(360deg);
+    }
+}
 
-        /* HUD corners */
-        .hud{position:fixed;width:30px;height:30px;z-index:3;pointer-events:none}
-        .hud-tl{top:15px;left:15px;border-top:2px solid rgba(0,255,163,0.6);border-left:2px solid rgba(0,255,163,0.6)}
-        .hud-tr{top:15px;right:15px;border-top:2px solid rgba(0,255,163,0.6);border-right:2px solid rgba(0,255,163,0.6)}
-        .hud-bl{bottom:85px;left:15px;border-bottom:2px solid rgba(0,255,163,0.6);border-left:2px solid rgba(0,255,163,0.6)}
-        .hud-br{bottom:85px;right:15px;border-bottom:2px solid rgba(0,255,163,0.6);border-right:2px solid rgba(0,255,163,0.6)}
+/* Scan beam - Enhanced */
+.scan-beam{
+    position:fixed;
+    top:0;left:-100%;
+    width:4px;height:100%;
+    background:linear-gradient(to bottom,
+        transparent 0%,
+        rgba(0,255,163,0.2) 10%,
+        rgba(0,255,163,0.6) 30%,
+        rgba(0,255,163,1) 50%,
+        rgba(0,255,163,0.6) 70%,
+        rgba(0,255,163,0.2) 90%,
+        transparent 100%);
+    z-index:2;
+    pointer-events:none;
+    animation:scanBeam 12s linear infinite;
+    box-shadow:
+        0 0 20px rgba(0,255,163,0.6),
+        0 0 40px rgba(0,255,163,0.3),
+        inset 0 0 10px rgba(0,255,163,0.4);
+    filter: drop-shadow(0 0 15px rgba(0,255,163,0.5));
+}
+@keyframes scanBeam{
+    0%{left:-2%}100%{left:102%}
+}
 
-        /* Floating particles */
-        .particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2}
-        .particle{
-            position:absolute;width:3px;height:3px;
-            background:var(--accent);border-radius:50%;opacity:0;
-            animation:floatUp 15s infinite;
-            box-shadow:0 0 8px var(--accent);
-        }
-        @keyframes floatUp{
-            0%{transform:translateY(100vh) translateX(0);opacity:0}
-            10%{opacity:0.4}90%{opacity:0.4}
-            100%{transform:translateY(-20vh) translateX(60px);opacity:0}
-        }
+/* Holographic wave effect */
+.holo-wave{
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    z-index:0.5;
+    pointer-events:none;
+    overflow:hidden;
+}
+.wave-line{
+    position:absolute;
+    width:200%;
+    height:1px;
+    background:linear-gradient(90deg, transparent 0%, rgba(0,255,163,0.1) 50%, transparent 100%);
+    animation: waveMove 8s linear infinite;
+}
+@keyframes waveMove{
+    0% { transform: translateY(0) translateX(0); }
+    100% { transform: translateY(100vh) translateX(-50%); }
+}
+
+/* HUD corners - Enhanced */
+.hud{
+    position:fixed;width:30px;height:30px;z-index:3;pointer-events:none;
+    opacity:0.8;
+}
+.hud-tl{
+    top:15px;left:15px;
+    border-top:2px solid rgba(0,255,163,0.8);
+    border-left:2px solid rgba(0,255,163,0.8);
+    box-shadow: 0 0 15px rgba(0,255,163,0.6), inset 0 0 10px rgba(0,255,163,0.3);
+    animation: hudPulse 2s ease-in-out infinite;
+}
+.hud-tr{
+    top:15px;right:15px;
+    border-top:2px solid rgba(0,255,163,0.8);
+    border-right:2px solid rgba(0,255,163,0.8);
+    box-shadow: 0 0 15px rgba(0,255,163,0.6), inset 0 0 10px rgba(0,255,163,0.3);
+    animation: hudPulse 2s ease-in-out infinite 0.5s;
+}
+.hud-bl{
+    bottom:85px;left:15px;
+    border-bottom:2px solid rgba(0,255,163,0.8);
+    border-left:2px solid rgba(0,255,163,0.8);
+    box-shadow: 0 0 15px rgba(0,255,163,0.6), inset 0 0 10px rgba(0,255,163,0.3);
+    animation: hudPulse 2s ease-in-out infinite 1s;
+}
+.hud-br{
+    bottom:85px;right:15px;
+    border-bottom:2px solid rgba(0,255,163,0.8);
+    border-right:2px solid rgba(0,255,163,0.8);
+    box-shadow: 0 0 15px rgba(0,255,163,0.6), inset 0 0 10px rgba(0,255,163,0.3);
+    animation: hudPulse 2s ease-in-out infinite 1.5s;
+}
+@keyframes hudPulse{
+    0%, 100% { opacity: 0.6; box-shadow: 0 0 15px rgba(0,255,163,0.6), inset 0 0 10px rgba(0,255,163,0.3); }
+    50% { opacity: 1; box-shadow: 0 0 25px rgba(0,255,163,0.9), inset 0 0 15px rgba(0,255,163,0.5); }
+}
+
+/* Floating particles - Enhanced */
+.particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.particle{
+    position:absolute;width:3px;height:3px;
+    background:radial-gradient(circle, rgba(0,255,163,0.8), rgba(0,255,163,0.2));
+    border-radius:50%;opacity:0;
+    animation:floatUp 15s infinite;
+    box-shadow:0 0 12px rgba(0,255,163,0.6);
+}
+@keyframes floatUp{
+    0%{
+        transform:translateY(100vh) translateX(0) rotateZ(0deg);
+        opacity:0;
+    }
+    10%{opacity:0.6}
+    90%{opacity:0.3}
+    100%{
+        transform:translateY(-20vh) translateX(100px) rotateZ(360deg);
+        opacity:0;
+    }
+}
+
+/* 3D depth effect overlay */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at center top, 
+            rgba(0,255,163,0.03) 0%, 
+            transparent 50%),
+        radial-gradient(ellipse at center bottom,
+            rgba(34,211,238,0.02) 0%,
+            transparent 50%);
+    pointer-events: none;
+    z-index: 0.5;
+    mix-blend-mode: overlay;
+}
 
         /* ── HEART CONTAINER ── */
         .heart-container{
@@ -332,12 +499,150 @@
 
 /* ── RESPONSIVE ── */
 
-/* 1. 일반 모바일 & 태블릿 (768px 이하) */
-@media(max-width: 768px) {
+/* 0. 극소형 모바일 (320px ~ 374px) */
+@media(max-width: 374px) {
+    .heart-container {
+        flex-direction: column;
+        gap: 12px;
+        top: 40%;
+        padding: 0 10px;
+    }
+    .heart-visual {
+        width: 100px !important;
+        height: 100px !important;
+        margin-bottom: 8px;
+    }
+    .heart-link::before {
+        width: 120px !important;
+        height: 120px !important;
+    }
+    .heart-label {
+        font-size: 8px;
+        padding: 4px 10px;
+        letter-spacing: 1px;
+    }
+    .main-title h1 {
+        font-size: clamp(2.2rem, 8vw, 3.5rem);
+        letter-spacing: 2px;
+    }
+    .ring-1 { width: 200px; height: 200px; margin: -100px 0 0 -100px; }
+    .ring-2 { width: 300px; height: 300px; margin: -150px 0 0 -150px; }
+    .ring-3 { width: 400px; height: 400px; margin: -200px 0 0 -200px; }
+    
+    #p-cont {
+        width: calc(100vw - 20px);
+        right: 10px;
+        left: 10px;
+        bottom: 120px;
+        padding: 12px;
+    }
+    .p-header { margin-bottom: 8px; }
+    .ctrls { gap: 6px; margin-bottom: 8px; }
+    .ctrls button { height: 32px; font-size: 10px; }
+    .s-list { max-height: 60px; font-size: 9px; }
+    
+    .hud { width: 24px; height: 24px; }
+    .hud-tl, .hud-tr { top: 10px; }
+    .hud-bl, .hud-br { bottom: 75px; }
+    
+    .lisa-text { font-size: 24px; margin: 0 20px; }
+    .bottom-shelf { height: 60px; }
+    
+    #musicToggle { width: 40px; height: 40px; bottom: 80px; }
+    #musicToggle svg { width: 20px; height: 20px; }
+}
+
+/* 1. 소형 모바일 (375px ~ 479px) */
+@media(min-width: 375px) and (max-width: 479px) {
+    .heart-container {
+        flex-direction: column;
+        gap: 14px;
+        top: 41%;
+        padding: 0 12px;
+    }
+    .heart-visual {
+        width: 120px !important;
+        height: 120px !important;
+        margin-bottom: 8px;
+    }
+    .heart-link::before {
+        width: 140px !important;
+        height: 140px !important;
+    }
+    .heart-label {
+        font-size: 8px;
+        padding: 4px 10px;
+        letter-spacing: 1.5px;
+    }
+    .main-title h1 {
+        font-size: clamp(2.5rem, 9vw, 4rem);
+        letter-spacing: 2px;
+    }
+    .ring-1 { width: 250px; height: 250px; margin: -125px 0 0 -125px; }
+    .ring-2 { width: 380px; height: 380px; margin: -190px 0 0 -190px; }
+    .ring-3 { width: 520px; height: 520px; margin: -260px 0 0 -260px; }
+    
+    #p-cont {
+        width: calc(100vw - 24px);
+        right: 12px;
+        left: 12px;
+        bottom: 125px;
+    }
+    .hud-bl, .hud-br { bottom: 76px; }
+    
+    .lisa-text { font-size: 26px; }
+    .bottom-shelf { height: 65px; }
+    
+    #musicToggle { width: 42px; height: 42px; bottom: 82px; }
+}
+
+/* 2. 중형 모바일 (480px ~ 599px) */
+@media(min-width: 480px) and (max-width: 599px) {
     .heart-container {
         flex-direction: column;
         gap: 16px;
         top: 42%;
+        padding: 0 14px;
+    }
+    .heart-visual {
+        width: 140px !important;
+        height: 140px !important;
+        margin-bottom: 9px;
+    }
+    .heart-link::before {
+        width: 165px !important;
+        height: 165px !important;
+    }
+    .heart-label {
+        font-size: 9px;
+        padding: 5px 11px;
+        letter-spacing: 1.8px;
+    }
+    .main-title h1 {
+        font-size: clamp(3rem, 10vw, 4.5rem);
+        letter-spacing: 3px;
+    }
+    .ring-1 { width: 300px; height: 300px; margin: -150px 0 0 -150px; }
+    .ring-2 { width: 440px; height: 440px; margin: -220px 0 0 -220px; }
+    .ring-3 { width: 580px; height: 580px; margin: -290px 0 0 -290px; }
+    
+    #p-cont {
+        width: calc(100vw - 28px);
+        right: 14px;
+        left: 14px;
+        bottom: 128px;
+    }
+    .hud-bl, .hud-br { bottom: 77px; }
+    
+    .lisa-text { font-size: 28px; }
+}
+
+/* 3. 대형 모바일 (600px ~ 767px) */
+@media(min-width: 600px) and (max-width: 767px) {
+    .heart-container {
+        flex-direction: column;
+        gap: 20px;
+        top: 43%;
         padding: 0 16px;
     }
     .heart-visual {
@@ -354,9 +659,13 @@
         padding: 6px 12px;
         letter-spacing: 2px;
     }
-    .ring-1 { width: 300px; height: 300px; margin: -150px 0 0 -150px; }
-    .ring-2 { width: 440px; height: 440px; margin: -220px 0 0 -220px; }
-    .ring-3 { width: 580px; height: 580px; margin: -290px 0 0 -290px; }
+    .main-title h1 {
+        font-size: clamp(3.5rem, 11vw, 5rem);
+        letter-spacing: 3px;
+    }
+    .ring-1 { width: 350px; height: 350px; margin: -175px 0 0 -175px; }
+    .ring-2 { width: 500px; height: 500px; margin: -250px 0 0 -250px; }
+    .ring-3 { width: 680px; height: 680px; margin: -340px 0 0 -340px; }
     
     #p-cont {
         width: calc(100vw - 32px);
@@ -367,145 +676,142 @@
     .hud-bl, .hud-br { bottom: 78px; }
 }
 
-/* 2. 초소형 모바일 (480px 이하) */
-@media(max-width: 480px) {
+/* 4. 세로 모드 태블릿 (768px ~ 1024px) */
+@media(min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
     .heart-container {
-        gap: 16px;
-        top: 42%;
+        flex-direction: column;
+        gap: 24px;
+        top: 44%;
+        padding: 0 20px;
     }
     .heart-visual {
-        width: 130px !important;
-        height: 130px !important;
+        width: 180px !important;
+        height: 180px !important;
     }
     .heart-link::before {
-        width: 155px !important;
-        height: 155px !important;
+        width: 210px !important;
+        height: 210px !important;
+    }
+    .heart-label {
+        font-size: 10px;
+        padding: 7px 14px;
+    }
+    .main-title h1 {
+        font-size: clamp(4rem, 12vw, 6rem);
+    }
+    
+    #p-cont {
+        width: 280px;
+        right: 16px;
+        left: auto;
+        bottom: 140px;
     }
 }
 
-/* 3. 가로 모드 모바일 (높이가 낮을 때) */
+/* 5. 가로 모드 모바일/태블릿 (높이 500px 이하) */
 @media(max-height: 500px) and (orientation: landscape) {
     .heart-container {
         flex-direction: row;
-        top: 45%;
         gap: 20px;
+        top: 45%;
+        flex-wrap: wrap;
+        max-height: 250px;
+        overflow-y: auto;
     }
     .heart-visual {
-        width: 110px !important;
-        height: 110px !important;
+        width: 100px !important;
+        height: 100px !important;
     }
     .heart-link::before {
-        width: 130px !important;
-        height: 130px !important;
+        width: 120px !important;
+        height: 120px !important;
     }
-    .heart-label { font-size: 8px; padding: 4px 10px; }
+    .heart-label {
+        font-size: 8px;
+        padding: 4px 8px;
+        letter-spacing: 1px;
+    }
+    .main-title h1 {
+        font-size: clamp(2.5rem, 8vw, 4rem);
+        opacity: 0.7;
+    }
     .bottom-shelf { height: 50px; }
-    .lisa-text { font-size: 28px; }
-    #p-cont { bottom: 100px; width: 220px; right: 10px; left: auto; }
+    .lisa-text { font-size: 24px; margin: 0 20px; }
+    
+    #p-cont {
+        bottom: 95px;
+        width: 240px;
+        right: 10px;
+        left: auto;
+    }
+    
+    #musicToggle {
+        bottom: 65px;
+        width: 38px;
+        height: 38px;
+    }
+    
+    .ring-1 { width: 280px; height: 280px; margin: -140px 0 0 -140px; }
+    .ring-2 { width: 420px; height: 420px; margin: -210px 0 0 -210px; }
+    .ring-3 { width: 560px; height: 560px; margin: -280px 0 0 -280px; }
 }
 
-/* 4. 중형 태블릿 (769px ~ 1024px) */
-@media(min-width: 769px) and (max-width: 1024px) {
+/* 6. 가로 모드 태블릿 (높이 500px ~ 800px) */
+@media(min-height: 501px) and (max-height: 800px) and (orientation: landscape) {
     .heart-container {
-        flex-wrap: wrap;
+        flex-direction: row;
         gap: 30px;
-        max-width: 600px;
+        top: 47%;
     }
     .heart-visual {
-        width: 160px !important;
-        height: 160px !important;
+        width: 140px !important;
+        height: 140px !important;
+    }
+    .heart-link::before {
+        width: 165px !important;
+        height: 165px !important;
+    }
+    .heart-label { font-size: 9px; }
+    
+    #p-cont { bottom: 110px; }
+    #musicToggle { bottom: 75px; }
+}
+
+/* 7. 데스크톱 (1025px 이상) - 기존 유지 */
+@media(min-width: 1025px) {
+    .heart-container {
+        gap: 50px;
+        top: 48%;
+        max-width: 960px;
+    }
+    .heart-visual {
+        width: 220px !important;
+        height: 220px !important;
+    }
+    .heart-link::before {
+        width: 280px !important;
+        height: 280px !important;
     }
 }
-/* 스타일 하단부에 추가되어 있던 #p-cont 수정 및 버튼 숨김 코드를 아래로 대체하세요 */
 
-#p-cont {
-    position: fixed;
-    bottom: 140px; /* 위치 조정 */
-    right: 16px;
-    width: 260px;
-    background: linear-gradient(135deg, rgba(2,6,23,0.97), rgba(15,23,42,0.95));
-    backdrop-filter: blur(30px);
-    border: 1px solid rgba(0,255,163,0.3);
-    border-radius: 24px;
-    z-index: 10000;
-    padding: 16px;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.7);
-    touch-action: none;
-    cursor: grab;
+/* 터치 디바이스 최적화 */
+@media(hover: none) and (pointer: coarse) {
+    .heart-link:active {
+        transform: translateY(-20px) rotateX(10deg) scale(1.08) !important;
+        filter: drop-shadow(0 30px 70px rgba(0,255,163,0.6)) !important;
+    }
+    
+    #p-cont {
+        box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 50px rgba(0,255,163,0.08);
+    }
 }
 
-/* 숨겨졌던 요소들 다시 표시 */
-.ctrls { 
-    display: grid; 
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 8px; 
-    margin-bottom: 12px; 
-}
-.ctrls button { 
-    display: block !important; /* 다시 보이게 수정 */
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,.12);
-    color: white;
-    height: 36px;
-    border-radius: 10px;
-    font-size: 11px;
-    cursor: pointer;
-    font-family: 'Space Mono', monospace;
-}
-.ctrls button:hover { background: var(--accent); color: black; }
-.s-list { 
-    display: block !important; /* 리스트 다시 보이게 수정 */
-    max-height: 80px; 
-    overflow-y: auto; 
-    background: rgba(0,0,0,.3); 
-    border-radius: 10px; 
-    padding: 6px; 
-}
-/* 스피커 버튼 스타일 */
-.bg-music-btn {
-    position: fixed;
-    bottom: 90px; /* LISA 텍스트 트랙 바로 위 위치 */
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10001;
-    background: rgba(0, 255, 163, 0.1);
-    border: 1px solid var(--accent);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
-    box-shadow: 0 0 15px rgba(0, 255, 163, 0.3);
-}
-
-.bg-music-btn:hover {
-    background: var(--accent);
-    box-shadow: 0 0 25px var(--accent);
-}
-
-.bg-music-btn svg {
-    width: 24px;
-    height: 24px;
-    fill: var(--accent);
-    transition: fill 0.3s;
-}
-
-.bg-music-btn:hover svg {
-    fill: black;
-}
-
-/* 음악 정지 상태일 때 스타일 */
-.bg-music-btn.muted {
-    border-color: #666;
-    opacity: 0.6;
-}
-
-.bg-music-btn.muted svg {
-    fill: #666;
+/* 초저해상도 화면 (max-width 320px) 폴백 */
+@media(max-width: 320px) {
+    body { font-size: 13px; }
+    .heart-container { gap: 10px; }
+    .heart-visual { width: 90px !important; height: 90px !important; }
+    .heart-label { font-size: 7px; padding: 3px 8px; }
 }
     </style>
 
@@ -515,6 +821,17 @@
 
     <!-- 4D Background Layers -->
     <canvas id="bg-canvas"></canvas>
+
+<!-- Holographic wave effect -->
+<div class="holo-wave">
+    <div class="wave-line" style="animation-delay: 0s;"></div>
+    <div class="wave-line" style="animation-delay: 2s;"></div>
+    <div class="wave-line" style="animation-delay: 4s;"></div>
+</div>
+
+<!-- Cosmic dust particles -->
+<div class="cosmic-dust" id="cosmic-dust"></div>
+
     <div class="grid-floor"></div>
     <div class="orbit-ring ring-1"></div>
     <div class="orbit-ring ring-2"></div>
@@ -821,6 +1138,34 @@ function initP() {
 
     bgAudio.volume = 0.5;
 })();
+
+/* ── COSMIC DUST GENERATION ── */
+(function(){
+    const container = document.getElementById('cosmic-dust');
+    if(!container) return;
+    
+    for(let i = 0; i < 50; i++){
+        const particle = document.createElement('div');
+        particle.className = 'dust-particle';
+        
+        const size = Math.random() * 80 + 20;
+        const x = Math.random() * 100;
+        const delay = Math.random() * 20;
+        const duration = Math.random() * 15 + 15;
+        const tx = (Math.random() - 0.5) * 300;
+        
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.left = x + 'vw';
+        particle.style.top = '100vh';
+        particle.style.setProperty('--tx', tx + 'px');
+        particle.style.animationDelay = delay + 's';
+        particle.style.animationDuration = duration + 's';
+        
+        container.appendChild(particle);
+    }
+})();
+
 
         window.onload=()=>{
             createParticles();
