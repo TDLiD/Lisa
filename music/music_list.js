@@ -1,4 +1,5 @@
 const EXTERNAL_TRACKS = [
+    "risk-it-all.mp3",
     "AS_IF_ITS_YOUR_LAST.mp3",
     "BOOMBAYAH.mp3",
     "DDU_DU_DDU_DU.mp3",
