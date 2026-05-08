@@ -813,6 +813,29 @@ body::after {
     .heart-visual { width: 90px !important; height: 90px !important; }
     .heart-label { font-size: 7px; padding: 3px 8px; }
 }
+
+    .bg-music-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        background: rgba(0, 0, 0, 0.5);
+        border: 2px solid #00FFF0;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    #speakerIcon {
+        width: 24px;
+        height: 24px;
+        fill: white;
+    }
+
     </style>
 
 </head>
@@ -884,9 +907,7 @@ body::after {
         </div>
     </div>
 
-<audio id="bgAudio" loop>
-    <source src="music/risk-it-all" type="audio/mpeg">
-</audio>
+<audio id="audio"></audio> 
 
 <button id="musicToggle" class="bg-music-btn" title="Toggle Music">
     <svg id="speakerIcon" viewBox="0 0 24 24">
@@ -904,256 +925,241 @@ body::after {
         <button id="p-btn" onclick="toggleP()">PLAY</button>
         <button onclick="nextT()">NEXT</button>
     </div>
-    <div class="s-list" id="pl"></div> <audio id="audio" loop></audio>
+    <div class="s-list" id="pl"></div>
 </div>
 
-    <script>
-        /* ── 4D CANVAS: fluid connected dots ── */
-        (function(){
-            const canvas = document.getElementById('bg-canvas');
-            const ctx = canvas.getContext('2d');
-            let W, H, pts = [];
-            const COUNT = window.innerWidth < 768 ? 40 : 70;
-            const CONNECT_DIST = window.innerWidth < 768 ? 120 : 160;
 
-            function resize(){
-                W = canvas.width = window.innerWidth;
-                H = canvas.height = window.innerHeight;
+<script>
+/* ── [1] 4D CANVAS: fluid connected dots ── */
+(function(){
+    const canvas = document.getElementById('bg-canvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let W, H, pts = [];
+    const COUNT = window.innerWidth < 768 ? 40 : 70;
+    const CONNECT_DIST = window.innerWidth < 768 ? 120 : 160;
+
+    function resize(){
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+    }
+
+    function initPts(){
+        pts = [];
+        for(let i=0;i<COUNT;i++){
+            pts.push({
+                x:Math.random()*W, y:Math.random()*H,
+                vx:(Math.random()-.5)*0.4,
+                vy:(Math.random()-.5)*0.4,
+                r:Math.random()*1.5+0.5,
+                depth:Math.random()
+            });
+        }
+    }
+
+    let mx=window.innerWidth/2, my=window.innerHeight/2;
+    window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+    window.addEventListener('touchmove',e=>{mx=e.touches[0].clientX;my=e.touches[0].clientY},{passive:true});
+
+    function draw(){
+        ctx.clearRect(0,0,W,H);
+        pts.forEach(p=>{
+            const dx=p.x-mx, dy=p.y-my;
+            const d=Math.sqrt(dx*dx+dy*dy);
+            if(d<100){
+                p.vx += dx/d*0.3;
+                p.vy += dy/d*0.3;
             }
-
-            function initPts(){
-                pts = [];
-                for(let i=0;i<COUNT;i++){
-                    pts.push({
-                        x:Math.random()*W, y:Math.random()*H,
-                        vx:(Math.random()-.5)*0.4,
-                        vy:(Math.random()-.5)*0.4,
-                        r:Math.random()*1.5+0.5,
-                        depth:Math.random()
-                    });
-                }
-            }
-
-            let mx=W/2, my=H/2;
-            window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
-            window.addEventListener('touchmove',e=>{mx=e.touches[0].clientX;my=e.touches[0].clientY},{passive:true});
-
-            function draw(){
-                ctx.clearRect(0,0,W,H);
-                // mouse repulsion + move
-                pts.forEach(p=>{
-                    const dx=p.x-mx, dy=p.y-my;
-                    const d=Math.sqrt(dx*dx+dy*dy);
-                    if(d<100){
-                        p.vx += dx/d*0.3;
-                        p.vy += dy/d*0.3;
-                    }
-                    p.vx *= 0.99; p.vy *= 0.99;
-                    p.x+=p.vx; p.y+=p.vy;
-                    if(p.x<0||p.x>W) p.vx*=-1;
-                    if(p.y<0||p.y>H) p.vy*=-1;
-                    // draw dot
-                    const alpha = 0.2 + p.depth*0.4;
+            p.vx *= 0.99; p.vy *= 0.99;
+            p.x+=p.vx; p.y+=p.vy;
+            if(p.x<0||p.x>W) p.vx*=-1;
+            if(p.y<0||p.y>H) p.vy*=-1;
+            const alpha = 0.2 + p.depth*0.4;
+            ctx.beginPath();
+            ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+            ctx.fillStyle=`rgba(0,255,163,${alpha})`;
+            ctx.fill();
+        });
+        for(let i=0;i<pts.length;i++){
+            for(let j=i+1;j<pts.length;j++){
+                const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y;
+                const d=Math.sqrt(dx*dx+dy*dy);
+                if(d<CONNECT_DIST){
+                    const alpha=(1-d/CONNECT_DIST)*0.15;
                     ctx.beginPath();
-                    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-                    ctx.fillStyle=`rgba(0,255,163,${alpha})`;
-                    ctx.fill();
-                });
-                // draw connections
-                for(let i=0;i<pts.length;i++){
-                    for(let j=i+1;j<pts.length;j++){
-                        const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y;
-                        const d=Math.sqrt(dx*dx+dy*dy);
-                        if(d<CONNECT_DIST){
-                            const alpha=(1-d/CONNECT_DIST)*0.15;
-                            ctx.beginPath();
-                            ctx.moveTo(pts[i].x,pts[i].y);
-                            ctx.lineTo(pts[j].x,pts[j].y);
-                            ctx.strokeStyle=`rgba(0,255,163,${alpha})`;
-                            ctx.lineWidth=0.5;
-                            ctx.stroke();
-                        }
-                    }
+                    ctx.moveTo(pts[i].x,pts[i].y);
+                    ctx.lineTo(pts[j].x,pts[j].y);
+                    ctx.strokeStyle=`rgba(0,255,163,${alpha})`;
+                    ctx.lineWidth=0.5;
+                    ctx.stroke();
                 }
-                requestAnimationFrame(draw);
-            }
-
-            window.addEventListener('resize',()=>{resize();initPts()});
-            resize(); initPts(); draw();
-        })();
-
-        /* ── PARALLAX on device tilt / mouse ── */
-        (function(){
-            const rings = document.querySelectorAll('.orbit-ring');
-            const nebulas = document.querySelectorAll('.nebula');
-            let tx=0,ty=0,cx=0,cy=0;
-
-            function apply(){
-                cx += (tx-cx)*0.05;
-                cy += (ty-cy)*0.05;
-                rings.forEach((r,i)=>{
-                    const s=(i+1)*0.3;
-                    r.style.transform=`rotateX(70deg) rotateZ(${cx*s}deg) translateY(${cy*s*2}px)`;
-                });
-                nebulas.forEach((n,i)=>{
-                    n.style.transform=`translate(${cx*(i+1)*5}px,${cy*(i+1)*5}px) scale(1)`;
-                });
-                requestAnimationFrame(apply);
-            }
-
-            window.addEventListener('mousemove',e=>{
-                tx=(e.clientX/window.innerWidth-.5)*20;
-                ty=(e.clientY/window.innerHeight-.5)*10;
-            });
-            window.addEventListener('deviceorientation',e=>{
-                if(e.gamma!=null){tx=e.gamma*0.4;ty=e.beta*0.2}
-            });
-            apply();
-        })();
-
-        /* ── PARTICLES ── */
-        function createParticles(){
-            const container=document.getElementById('particles');
-            const n = window.innerWidth < 768 ? 20 : 35;
-            for(let i=0;i<n;i++){
-                const p=document.createElement('div');
-                p.className='particle';
-                p.style.left=Math.random()*100+'%';
-                p.style.animationDelay=Math.random()*15+'s';
-                p.style.animationDuration=(10+Math.random()*10)+'s';
-                container.appendChild(p);
             }
         }
+        requestAnimationFrame(draw);
+    }
+    window.addEventListener('resize',()=>{resize();initPts()});
+    resize(); initPts(); draw();
+})();
 
-/* 스크립트 내의 MUSIC PLAYER 로직을 아래와 같이 수정하세요 */
-
+/* ── [2] MUSIC PLAYER & AUTO PLAY LOGIC (통합본) ── */
+/* ── [2] MUSIC PLAYER: 공격적 자동 재생 모드 ── */
 const audio = document.getElementById('audio');
 const pBtn = document.getElementById('p-btn');
 const tName = document.getElementById('t-name');
 const plEl = document.getElementById('pl');
 const pCont = document.getElementById('p-cont');
+const musicToggle = document.getElementById('musicToggle');
+const speakerIcon = document.getElementById('speakerIcon');
 
-// music_list.js에 EXTERNAL_TRACKS가 있으면 그것을 사용, 없으면 Ega.mp3 사용
 const tracks = (typeof EXTERNAL_TRACKS !== 'undefined' && EXTERNAL_TRACKS.length > 0) 
                ? EXTERNAL_TRACKS 
                : ["Ega.mp3"];
 let cIdx = 0;
 
 function initP() {
-    if (tracks.length > 0) {
-        // 플레이리스트 UI 생성 복구
+    if (typeof tracks !== 'undefined' && tracks.length > 0) {
         plEl.innerHTML = tracks.map((t, i) => 
             `<div class="s-item ${i === cIdx ? 'active' : ''}" onclick="loadT(${i})">
                 ${t.replace('.mp3', '').replace(/_/g, ' ')}
             </div>`
         ).join('');
-        loadT(0, false);
+        
+        // 페이지 로드 즉시 실행 시도
+        loadT(0, true); 
     }
-
-    // 사용자 상호작용 시 첫 재생 허용
-    window.addEventListener('click', () => {
-        if (audio.paused && audio.src) {
-            // toggleP(); // 필요 시 자동재생 활성화
-        }
-    }, { once: true });
 }
 
-// 나머지 loadT, toggleP, nextT, prevT 함수는 기존 소스 코드를 그대로 유지하시면 됩니다.
+function loadT(idx, auto = true) {
+    if (!tracks.length) return;
+    cIdx = idx;
+    audio.src = `music/${tracks[idx]}`;
+    tName.innerText = tracks[idx].replace('.mp3', '').replace(/_/g, ' ');
+    document.querySelectorAll('.s-item').forEach((it, i) => it.classList.toggle('active', i === idx));
+    
+    if (auto) {
+        // [필살기] 브라우저가 차단하지 못하도록 일단 음소거(muted)로 재생 시작
+        audio.muted = true;
+        audio.play().then(() => {
+            updUI(true);
+            
+            // 사용자가 화면에서 하는 모든 사소한 액션(마우스 이동, 클릭, 터치 등)에 반응
+            const forceUnmute = () => {
+                audio.muted = false;
+                // 일부 브라우저는 muted=false 시점에 일시정지되므로 다시 play
+                audio.play(); 
+                updUI(true);
+                
+                // 이벤트 모두 제거
+                ['click', 'touchstart', 'mousemove', 'keydown'].forEach(evt => 
+                    window.removeEventListener(evt, forceUnmute)
+                );
+            };
 
-        function loadT(idx,a=true){
-            if(!tracks.length)return;
-            cIdx=idx;
-            audio.src=`music/${tracks[idx]}`;
-            tName.innerText=tracks[idx].replace('.mp3','').replace(/_/g,' ');
-            document.querySelectorAll('.s-item').forEach((it,i)=>it.classList.toggle('active',i===idx));
-            if(a)audio.play().then(()=>updUI(true));else updUI(false);
-        }
-        function toggleP(){if(audio.paused)audio.play().then(()=>updUI(true));else{audio.pause();updUI(false)}}
-        function updUI(p){pCont.classList.toggle('paused',!p);pBtn.innerText=p?"PAUSE":"PLAY"}
-        function nextT(){cIdx=(cIdx+1)%tracks.length;loadT(cIdx)}
-        function prevT(){cIdx=(cIdx-1+tracks.length)%tracks.length;loadT(cIdx)}
-        audio.onended=nextT;
+            ['click', 'touchstart', 'mousemove', 'keydown'].forEach(evt => 
+                window.addEventListener(evt, forceUnmute, { once: false })
+            );
+            
+        }).catch(e => {
+            // 음소거 재생조차 막힌 극단적인 경우 (거의 없음)
+            const playOnFirstInteraction = () => {
+                audio.muted = false;
+                audio.play().then(() => updUI(true));
+                window.removeEventListener('mousedown', playOnFirstInteraction);
+            };
+            window.addEventListener('mousedown', playOnFirstInteraction);
+        });
+    } else {
+        updUI(false);
+    }
+}
 
-        /* ── DRAG ── */
-        let isDrag=false,sX,sY,iX,iY;
-        const sD=(e)=>{
-            if(e.target.closest('button')||e.target.closest('.s-list'))return;
-            isDrag=true;
-            const cX=e.type==='touchstart'?e.touches[0].clientX:e.clientX;
-            const cY=e.type==='touchstart'?e.touches[0].clientY:e.clientY;
-            const r=pCont.getBoundingClientRect();
-            sX=cX;sY=cY;iX=r.left;iY=r.top;
-        };
-        const oD=(e)=>{
-            if(!isDrag)return;
-            const cX=e.type==='touchmove'?e.touches[0].clientX:e.clientX;
-            const cY=e.type==='touchmove'?e.touches[0].clientY:e.clientY;
-            pCont.style.left=`${iX+(cX-sX)}px`;
-            pCont.style.top=`${iY+(cY-sY)}px`;
-            pCont.style.right='auto';pCont.style.bottom='auto';
-        };
-        const eD=()=>{isDrag=false};
-        pCont.addEventListener('mousedown',sD);
-        pCont.addEventListener('touchstart',sD,{passive:false});
-        window.addEventListener('mousemove',oD);
-        window.addEventListener('touchmove',oD,{passive:false});
-        window.addEventListener('mouseup',eD);
-        window.addEventListener('touchend',eD);
+function toggleP() {
+    audio.muted = false; 
+    if (audio.paused) {
+        audio.play().then(() => updUI(true));
+    } else {
+        audio.pause();
+        updUI(false);
+    }
+}
 
-/* 배경 음악 컨트롤 로직 */
-(function() {
-    const bgAudio = document.getElementById('bgAudio');
-    const musicBtn = document.getElementById('musicToggle');
-
-    // 재생/일시정지 토글 함수
-    function toggleMusic() {
-        if (bgAudio.paused) {
-            bgAudio.play().catch(e => console.log("재생 실패:", e));
-            musicBtn.classList.remove('muted');
+function updUI(p) {
+    pCont.classList.toggle('paused', !p);
+    if(pBtn) pBtn.innerText = p ? "PAUSE" : "PLAY";
+    if(musicToggle) {
+        if(p) {
+            musicToggle.classList.add('playing');
+            if(speakerIcon) speakerIcon.style.fill = "#00FFF0";
         } else {
-            bgAudio.pause();
-            musicBtn.classList.add('muted');
+            musicToggle.classList.remove('playing');
+            if(speakerIcon) speakerIcon.style.fill = "#ffffff";
         }
     }
+}
 
-    musicBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); 
-        toggleMusic();
-    });
+function nextT() { audio.muted = false; cIdx = (cIdx + 1) % tracks.length; loadT(cIdx); }
+function prevT() { audio.muted = false; cIdx = (cIdx - 1 + tracks.length) % tracks.length; loadT(cIdx); }
 
-    // 핵심: 페이지 로드 후 사용자가 "어디든 클릭"하면 자동 재생 실행
-    const autoPlayStarter = () => {
-        bgAudio.play().then(() => {
-            musicBtn.classList.remove('muted');
-            // 재생에 성공하면 클릭 이벤트 제거
-            window.removeEventListener('click', autoPlayStarter);
-            window.removeEventListener('touchstart', autoPlayStarter);
-        }).catch(error => {
-            console.log("브라우저 차단으로 대기 중...");
-        });
-    };
+audio.onended = nextT;
+if(musicToggle) musicToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleP(); });
 
-    window.addEventListener('click', autoPlayStarter);
-    window.addEventListener('touchstart', autoPlayStarter); // 모바일 대응
+// 초기 볼륨 설정
+audio.volume = 0.5;
 
-    bgAudio.volume = 0.5;
-})();
 
-/* ── COSMIC DUST GENERATION ── */
+
+/* ── [3] DRAG & UI INTERACTION ── */
+let isDrag=false,sX,sY,iX,iY;
+const sD=(e)=>{
+    if(e.target.closest('button')||e.target.closest('.s-list'))return;
+    isDrag=true;
+    const cX=e.type==='touchstart'?e.touches[0].clientX:e.clientX;
+    const cY=e.type==='touchstart'?e.touches[0].clientY:e.clientY;
+    const r=pCont.getBoundingClientRect();
+    sX=cX;sY=cY;iX=r.left;iY=r.top;
+};
+const oD=(e)=>{
+    if(!isDrag)return;
+    const cX=e.type==='touchmove'?e.touches[0].clientX:e.clientX;
+    const cY=e.type==='touchmove'?e.touches[0].clientY:e.clientY;
+    pCont.style.left=`${iX+(cX-sX)}px`;
+    pCont.style.top=`${iY+(cY-sY)}px`;
+    pCont.style.right='auto';pCont.style.bottom='auto';
+};
+const eD=()=>{isDrag=false};
+pCont.addEventListener('mousedown',sD);
+pCont.addEventListener('touchstart',sD,{passive:false});
+window.addEventListener('mousemove',oD);
+window.addEventListener('touchmove',oD,{passive:false});
+window.addEventListener('mouseup',eD);
+window.addEventListener('touchend',eD);
+
+/* ── [4] PARTICLES & DUST ── */
+function createParticles(){
+    const container=document.getElementById('particles');
+    if(!container) return;
+    const n = window.innerWidth < 768 ? 20 : 35;
+    for(let i=0;i<n;i++){
+        const p=document.createElement('div');
+        p.className='particle';
+        p.style.left=Math.random()*100+'%';
+        p.style.animationDelay=Math.random()*15+'s';
+        p.style.animationDuration=(10+Math.random()*10)+'s';
+        container.appendChild(p);
+    }
+}
+
 (function(){
     const container = document.getElementById('cosmic-dust');
     if(!container) return;
-    
     for(let i = 0; i < 50; i++){
         const particle = document.createElement('div');
         particle.className = 'dust-particle';
-        
         const size = Math.random() * 80 + 20;
         const x = Math.random() * 100;
         const delay = Math.random() * 20;
         const duration = Math.random() * 15 + 15;
         const tx = (Math.random() - 0.5) * 300;
-        
         particle.style.width = size + 'px';
         particle.style.height = size + 'px';
         particle.style.left = x + 'vw';
@@ -1161,16 +1167,64 @@ function initP() {
         particle.style.setProperty('--tx', tx + 'px');
         particle.style.animationDelay = delay + 's';
         particle.style.animationDuration = duration + 's';
-        
         container.appendChild(particle);
     }
 })();
 
+/* ── [5] PARALLAX ── */
+(function(){
+    const rings = document.querySelectorAll('.orbit-ring');
+    const nebulas = document.querySelectorAll('.nebula');
+    let tx=0,ty=0,cx=0,cy=0;
+    function apply(){
+        cx += (tx-cx)*0.05;
+        cy += (ty-cy)*0.05;
+        rings.forEach((r,i)=>{
+            const s=(i+1)*0.3;
+            r.style.transform=`rotateX(70deg) rotateZ(${cx*s}deg) translateY(${cy*s*2}px)`;
+        });
+        nebulas.forEach((n,i)=>{
+            n.style.transform=`translate(${cx*(i+1)*5}px,${cy*(i+1)*5}px) scale(1)`;
+        });
+        requestAnimationFrame(apply);
+    }
+    window.addEventListener('mousemove',e=>{
+        tx=(e.clientX/window.innerWidth-.5)*20;
+        ty=(e.clientY/window.innerHeight-.5)*10;
+    });
+    apply();
+})();
 
-        window.onload=()=>{
-            createParticles();
-            initP();
-        };
-    </script>
+window.onload = () => {
+    createParticles();
+    initP();
+
+    // 모바일/iOS 대응 자동재생
+    const unlockAudio = async () => {
+        try {
+            audio.muted = true;
+            await audio.play();
+
+            setTimeout(() => {
+                audio.muted = false;
+            }, 300);
+
+            updUI(true);
+
+            window.removeEventListener('touchstart', unlockAudio);
+            window.removeEventListener('click', unlockAudio);
+
+        } catch(e) {
+            console.log(e);
+        }
+    };
+
+    window.addEventListener('touchstart', unlockAudio, { once:true });
+    window.addEventListener('click', unlockAudio, { once:true });
+};
+
+
+</script>
+
 </body>
 </html>
