@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+    <title>2026-06 ✦ Fantasia</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <script src="music/music_list.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --fae-gold:    #ffd700;
+            --fae-rose:    #ff85b3;
+            --fae-violet:  #b06bff;
+            --fae-aqua:    #5eecd8;
+            --fae-aurora:  #ff9de2;
+            --fae-deep:    #0d0520;
+            --fae-mid:     #1a0a38;
+            --fae-light:   #f0d6ff;
+            --card-w: 155px;
+            --card-h: 195px;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            margin: 0;
+            background: var(--fae-deep);
+            color: var(--fae-light);
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
+            height: 100dvh;
+            position: fixed;
+            width: 100%;
+        }
+
+        /* ══ AURORA SKY BACKGROUND ══ */
+        #aurora-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ══ STARFIELD ══ */
+        #starfield {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            animation: twinkle var(--dur, 3s) ease-in-out infinite;
+            animation-delay: var(--del, 0s);
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.1; transform: scale(1); }
+            50%       { opacity: 1;   transform: scale(1.6); }
+        }
+
+        /* ══ FLOATING MAGIC DUST ══ */
+        #magic-dust {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .mote {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0;
+            animation: moteRise var(--dur, 20s) linear infinite;
+            animation-delay: var(--del, 0s);
+        }
+        @keyframes moteRise {
+            0%   { transform: translateY(110vh) translateX(0) scale(0.5); opacity: 0; }
+            10%  { opacity: 0.8; }
+            90%  { opacity: 0.5; }
+            100% { transform: translateY(-15vh) translateX(var(--tx, 60px)) scale(1.2); opacity: 0; }
+        }
+
+        /* ══ FAIRY LIGHTS RING ══ */
+        .fairy-ring {
+            position: fixed;
+            border-radius: 50%;
+            border: 1px solid;
+            pointer-events: none;
+            z-index: 2;
+            top: 50%; left: 50%;
+            animation: fairySpin var(--spin-dur, 30s) linear infinite;
+            filter: drop-shadow(0 0 8px currentColor);
+        }
+        .fr1 { width:560px; height:560px; margin:-280px 0 0 -280px; border-color:rgba(255,215,0,0.25);  --spin-dur:28s; }
+        .fr2 { width:760px; height:760px; margin:-380px 0 0 -380px; border-color:rgba(176,107,255,0.2); --spin-dur:45s; animation-direction:reverse; }
+        .fr3 { width:960px; height:960px; margin:-480px 0 0 -480px; border-color:rgba(94,236,216,0.15); --spin-dur:60s; }
+        @keyframes fairySpin {
+            from { transform: rotateX(68deg) rotateZ(0deg) perspective(1400px); }
+            to   { transform: rotateX(68deg) rotateZ(360deg) perspective(1400px); }
+        }
+
+        /* ══ CRYSTAL ORBS ══ */
+        .crystal-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.35;
+            pointer-events: none;
+            z-index: 1;
+            animation: orbDrift 20s ease-in-out infinite;
+        }
+        .co1 { width:500px; height:500px; top:-8%;  left:-8%;   background:radial-gradient(circle, rgba(176,107,255,0.5),transparent 70%); animation-delay:0s; }
+        .co2 { width:600px; height:600px; bottom:-12%; right:-12%; background:radial-gradient(circle, rgba(255,133,179,0.45),transparent 70%); animation-delay:-7s; }
+        .co3 { width:350px; height:350px; top:45%;  left:45%;   background:radial-gradient(circle, rgba(94,236,216,0.4),transparent 70%); animation-delay:-14s; }
+        .co4 { width:280px; height:280px; top:15%;  right:10%;  background:radial-gradient(circle, rgba(255,215,0,0.3),transparent 70%);  animation-delay:-4s; }
+        @keyframes orbDrift {
+            0%,100% { transform: translate(0,0) scale(1); }
+            33%     { transform: translate(40px,-40px) scale(1.1); }
+            66%     { transform: translate(-30px,30px) scale(0.92); }
+        }
+
+        /* ══ SCAN BEAM — magical wisp ══ */
+        .wisp-beam {
+            position: fixed;
+            top: 0; left: -5%;
+            width: 3px; height: 100%;
+            background: linear-gradient(to bottom,
+                transparent 0%,
+                var(--fae-violet) 30%,
+                var(--fae-gold) 50%,
+                var(--fae-rose) 70%,
+                transparent 100%);
+            z-index: 3;
+            pointer-events: none;
+            animation: wispSweep 14s linear infinite;
+            box-shadow: 0 0 18px var(--fae-violet), 0 0 40px var(--fae-rose);
+        }
+        @keyframes wispSweep { 0%{left:-3%} 100%{left:103%} }
+
+        /* ══ HUD CORNERS — rune style ══ */
+        .rune-corner {
+            position: fixed;
+            width: 32px; height: 32px;
+            z-index: 4;
+            pointer-events: none;
+            opacity: 0.7;
+            animation: runePulse 2.5s ease-in-out infinite;
+        }
+        .rc-tl { top:12px; left:12px;  border-top:2px solid var(--fae-gold); border-left:2px solid var(--fae-gold);  animation-delay:0s; }
+        .rc-tr { top:12px; right:12px; border-top:2px solid var(--fae-gold); border-right:2px solid var(--fae-gold); animation-delay:0.6s; }
+        .rc-bl { bottom:76px; left:12px;  border-bottom:2px solid var(--fae-gold); border-left:2px solid var(--fae-gold);  animation-delay:1.2s; }
+        .rc-br { bottom:76px; right:12px; border-bottom:2px solid var(--fae-gold); border-right:2px solid var(--fae-gold); animation-delay:1.8s; }
+        @keyframes runePulse {
+            0%,100% { opacity:0.4; box-shadow:0 0 6px var(--fae-gold); }
+            50%     { opacity:0.9; box-shadow:0 0 18px var(--fae-gold), 0 0 35px var(--fae-violet); }
+        }
+
+        /* ══ TITLE ══ */
+        .page-title {
+            position: fixed;
+            top: max(14px, env(safe-area-inset-top));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            text-align: center;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .page-title h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.1rem, 4vw, 2.2rem);
+            font-weight: 900;
+            letter-spacing: 6px;
+            background: linear-gradient(135deg, var(--fae-gold), var(--fae-rose), var(--fae-violet), var(--fae-aqua));
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleShimmer 4s ease-in-out infinite;
+            text-shadow: none;
+        }
+        .page-title .subtitle {
+            font-size: 9px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--fae-gold);
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+        @keyframes titleShimmer {
+            0%,100% { filter: brightness(1) drop-shadow(0 0 8px var(--fae-violet)); }
+            50%     { filter: brightness(1.4) drop-shadow(0 0 20px var(--fae-gold)); }
+        }
+
+        /* ══ MAIN GALLERY ══ */
+        #main-scroller {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            perspective: 2800px;
+            z-index: 5;
+        }
+
+        #gallery-scene {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        /* ══ FANTASY PHOTO CARDS ══ */
+        .fae-card {
+            position: absolute;
+            width: var(--card-w);
+            height: var(--card-h);
+            top: -220px;
+            border-radius: 22px;
+            border: 2px solid rgba(255,215,0,0.5);
+            background: rgba(13,5,32,0.6);
+            overflow: hidden;
+            cursor: pointer;
+            backface-visibility: hidden;
+            transform-style: preserve-3d;
+            animation: fantasyFall linear infinite;
+            box-shadow:
+                0 0 25px rgba(176,107,255,0.5),
+                0 10px 40px rgba(0,0,0,0.7),
+                inset 0 0 15px rgba(255,215,0,0.08);
+            transition: filter 0.4s, border-color 0.4s;
+        }
+
+        /* Rainbow shimmer sweep */
+        .fae-card::before {
+            content: '';
+            position: absolute;
+            inset: -60%;
+            background: linear-gradient(
+                120deg,
+                transparent 0%,
+                rgba(255,215,0,0.25) 30%,
+                rgba(255,133,179,0.3) 50%,
+                rgba(176,107,255,0.25) 70%,
+                transparent 100%
+            );
+            transform: translateX(-120%) rotate(30deg);
+            transition: transform 0.9s ease;
+            pointer-events: none;
+        }
+        .fae-card:hover::before { transform: translateX(120%) rotate(30deg); }
+
+        /* Bottom glow bar */
+        .fae-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 50px;
+            background: linear-gradient(to top, rgba(176,107,255,0.7), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+        .fae-card:hover::after { opacity: 1; }
+
+        .fae-card:hover {
+            filter: brightness(1.35) saturate(1.4) drop-shadow(0 0 20px var(--fae-gold));
+            border-color: var(--fae-gold);
+            transform: translateZ(70px) scale(1.12) rotateY(-8deg) !important;
+            box-shadow:
+                0 0 50px rgba(255,215,0,0.8),
+                0 20px 70px rgba(0,0,0,0.9),
+                inset 0 0 30px rgba(255,215,0,0.15);
+            animation-play-state: paused;
+            z-index: 99;
+        }
+
+        .fae-card img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+            transition: transform 0.5s, opacity 0.4s;
+            opacity: 0.9;
+        }
+        .fae-card:hover img { transform: scale(1.08); opacity: 1; }
+
+        @keyframes fantasyFall {
+            0%   { transform: translateY(-220px) translateZ(0) rotateZ(var(--tilt,0deg)); opacity:0; }
+            5%   { opacity: 1; }
+            92%  { opacity: 1; }
+            100% { transform: translateY(110vh) translateZ(0) rotateZ(var(--tilt,0deg)); opacity:0; }
+        }
+
+        @media (max-width:768px) {
+            :root { --card-w:118px; --card-h:148px; }
+        }
+
+        /* ══ NAVIGATION ══ */
+        .nav {
+            position: fixed;
+            top: max(16px, env(safe-area-inset-top));
+            left: 16px;
+            z-index: 10000;
+        }
+        .fae-btn {
+            padding: 11px 22px;
+            border: 2px solid var(--fae-gold);
+            color: var(--fae-gold);
+            text-decoration: none;
+            background: rgba(13,5,32,0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 0 16px rgba(255,215,0,0.35), 0 4px 18px rgba(0,0,0,0.6);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .fae-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,215,0,0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+        .fae-btn:hover {
+            background: rgba(255,215,0,0.12);
+            transform: translateY(-3px);
+            box-shadow: 0 0 35px rgba(255,215,0,0.7), 0 8px 25px rgba(0,0,0,0.8);
+        }
+        .fae-btn:hover::before { transform: translateX(100%); }
+
+        /* ══ BOTTOM CONTROLS ══ */
+        .bottom-nav {
+            position: fixed;
+            bottom: max(18px, env(safe-area-inset-bottom));
+            left: 18px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #heart-btn {
+            width: 52px; height: 52px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--fae-rose), #c0005a);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            border: 2px solid var(--fae-rose);
+            box-shadow: 0 0 28px rgba(255,133,179,0.6), 0 8px 28px rgba(255,0,110,0.4);
+            transition: all 0.3s;
+        }
+        #heart-btn:hover {
+            transform: scale(1.2) rotate(8deg);
+            box-shadow: 0 0 50px rgba(255,133,179,1), 0 12px 40px rgba(255,0,110,0.7);
+        }
+
+        #oracle-btn {
+            height: 52px;
+            padding: 0 26px;
+            background: linear-gradient(135deg, rgba(176,107,255,0.25), rgba(255,215,0,0.15));
+            border: 2px solid var(--fae-violet);
+            color: var(--fae-light);
+            border-radius: 26px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 28px rgba(176,107,255,0.5), 0 8px 28px rgba(0,0,0,0.6);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        #oracle-btn::before {
+            content: '';
+            position: absolute;
+            top:-50%; left:-50%;
+            width:200%; height:200%;
+            background: conic-gradient(from 0deg, transparent, rgba(176,107,255,0.4), transparent);
+            animation: orbSpin 3s linear infinite;
+        }
+        @keyframes orbSpin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+        #oracle-btn:hover {
+            transform: translateY(-4px);
+            background: linear-gradient(135deg, rgba(176,107,255,0.5), rgba(255,215,0,0.3));
+            box-shadow: 0 0 50px rgba(176,107,255,0.9), 0 12px 40px rgba(176,107,255,0.5);
+        }
+
+        /* ══ MUSIC PLAYER ══ */
+        #p-cont {
+            position: fixed;
+            bottom: max(18px, env(safe-area-inset-bottom));
+            right: 18px;
+            width: 265px;
+            background: linear-gradient(135deg, rgba(13,5,32,0.97), rgba(26,10,56,0.93));
+            backdrop-filter: blur(30px) saturate(180%);
+            border: 2px solid rgba(176,107,255,0.6);
+            border-radius: 24px;
+            z-index: 1000000;
+            padding: 18px;
+            box-shadow:
+                0 0 40px rgba(176,107,255,0.45),
+                0 20px 60px rgba(0,0,0,0.8),
+                inset 0 0 20px rgba(255,215,0,0.05);
+            touch-action: none;
+            transition: all 0.3s;
+            cursor: grab;
+        }
+        #p-cont:active { cursor: grabbing; }
+        #p-cont::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            background: linear-gradient(60deg, transparent, rgba(255,215,0,0.08), transparent);
+            animation: playerShimmer 5s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes playerShimmer {
+            0%,100% { transform: translateX(-100%); }
+            50%     { transform: translateX(100%); }
+        }
+        #p-cont:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 60px rgba(176,107,255,0.7), 0 25px 80px rgba(0,0,0,0.9);
+        }
+
+        @media (max-width:480px) {
+            #p-cont { width:calc(100% - 36px); left:18px; right:18px; }
+        }
+
+        .p-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; position:relative; z-index:1; }
+        .eq {
+            display:flex; align-items:flex-end; gap:3px; height:16px;
+            padding:4px; background:rgba(176,107,255,0.15);
+            border-radius:10px; border:1px solid rgba(176,107,255,0.35);
+        }
+        .eq span {
+            width:4px;
+            background: linear-gradient(to top, var(--fae-violet), var(--fae-gold));
+            animation: eqDance 0.7s ease-in-out infinite alternate;
+            border-radius:2px;
+            box-shadow: 0 0 8px var(--fae-violet);
+        }
+        .eq span:nth-child(2){animation-delay:.15s}
+        .eq span:nth-child(3){animation-delay:.3s}
+        .eq span:nth-child(4){animation-delay:.45s}
+        @keyframes eqDance { 0%{height:4px} 100%{height:16px} }
+        .paused .eq span { animation-play-state:paused; height:4px; }
+
+        .np-c { flex:1; overflow:hidden; }
+        .np-label { font-size:8px; letter-spacing:3px; color:var(--fae-gold); text-transform:uppercase; opacity:0.75; margin-bottom:2px; }
+        #t-name {
+            font-size:11px; font-weight:700;
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+            color:var(--fae-aqua);
+            text-shadow:0 0 10px rgba(94,236,216,0.6);
+        }
+
+        .ctrls {
+            display:grid; grid-template-columns:repeat(4,1fr);
+            gap:8px; margin:10px 0; position:relative; z-index:1;
+        }
+        .ctrls button {
+            background: linear-gradient(135deg, rgba(176,107,255,0.2), rgba(255,215,0,0.15));
+            border: 1px solid rgba(255,255,255,0.18);
+            color: white;
+            cursor: pointer;
+            border-radius: 12px;
+            height: 38px;
+            font-size: 11px; font-weight:700;
+            font-family: 'Cinzel', serif;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        .ctrls button:hover {
+            background: linear-gradient(135deg, rgba(176,107,255,0.5), rgba(255,215,0,0.35));
+            border-color: var(--fae-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 0 18px rgba(255,215,0,0.6), 0 6px 20px rgba(0,0,0,0.6);
+        }
+
+        .s-list {
+            max-height:72px; overflow-y:auto;
+            font-size:10px; background:rgba(0,0,0,0.45);
+            border-radius:12px; padding:6px; position:relative; z-index:1;
+            border:1px solid rgba(176,107,255,0.3);
+        }
+        .s-list::-webkit-scrollbar { width:4px; }
+        .s-list::-webkit-scrollbar-track { background:rgba(0,0,0,0.3); border-radius:4px; }
+        .s-list::-webkit-scrollbar-thumb {
+            background:linear-gradient(to bottom, var(--fae-gold), var(--fae-violet));
+            border-radius:4px;
+        }
+        .s-item {
+            padding:7px 10px; cursor:pointer; border-radius:8px;
+            opacity:0.55; transition:all 0.3s;
+            font-family:'Quicksand',sans-serif; font-weight:600;
+            position: relative;
+        }
+        .s-item:hover { opacity:0.85; background:rgba(255,255,255,0.05); padding-left:14px; }
+        .s-item.active {
+            opacity:1;
+            background:linear-gradient(90deg, rgba(176,107,255,0.3), rgba(255,215,0,0.2));
+            color:var(--fae-gold);
+            font-weight:700;
+            box-shadow:0 0 14px rgba(255,215,0,0.35);
+            padding-left:14px;
+        }
+
+        /* ══ ORACLE SCAN OVERLAY ══ */
+        #proc-ov {
+            position:fixed; inset:0;
+            background:rgba(13,5,32,0.96);
+            display:none; flex-direction:column;
+            align-items:center; justify-content:center;
+            z-index:2000000;
+            backdrop-filter:blur(25px);
+        }
+        .oracle-ring {
+            width:140px; height:140px;
+            border:3px solid transparent;
+            border-top-color:var(--fae-gold);
+            border-right-color:var(--fae-violet);
+            border-radius:50%;
+            animation:oracleSpinA 1s linear infinite;
+            box-shadow:0 0 30px rgba(255,215,0,0.4);
+            margin-bottom:30px;
+            position:relative;
+        }
+        .oracle-ring::after {
+            content:'✦';
+            position:absolute; top:50%; left:50%;
+            transform:translate(-50%,-50%);
+            font-size:36px;
+            background:linear-gradient(135deg, var(--fae-gold), var(--fae-violet));
+            -webkit-background-clip:text; background-clip:text;
+            -webkit-text-fill-color:transparent;
+            animation:oracleSpinB 1s linear infinite reverse;
+        }
+        @keyframes oracleSpinA { to{transform:rotate(360deg)} }
+        @keyframes oracleSpinB { to{transform:translate(-50%,-50%) rotate(360deg)} }
+
+        #proc-ov .oracle-text {
+            font-family:'Cinzel',serif;
+            color:var(--fae-gold);
+            letter-spacing:5px;
+            font-size:14px;
+            text-shadow:0 0 25px var(--fae-gold);
+            animation:glow 0.8s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from{filter:brightness(1)}
+            to{filter:brightness(1.6) drop-shadow(0 0 10px var(--fae-gold))}
+        }
+        .loader {
+            width:220px; height:5px;
+            background:rgba(176,107,255,0.2);
+            margin-top:28px; border-radius:5px;
+            overflow:hidden;
+            box-shadow:inset 0 0 12px rgba(176,107,255,0.25);
+        }
+        .l-bar {
+            width:0%; height:100%;
+            background:linear-gradient(90deg, var(--fae-gold), var(--fae-rose), var(--fae-violet));
+            background-size:200% 100%;
+            position:absolute; transition:width 0.2s;
+            border-radius:5px;
+            box-shadow:0 0 22px var(--fae-gold);
+            animation:playerShimmer 2s linear infinite;
+        }
+
+        /* ══ MODAL ══ */
+        #modal {
+            position:fixed; inset:0;
+            background:rgba(13,5,32,0.97);
+            display:none;
+            align-items:center; justify-content:center;
+            z-index:3000000;
+            backdrop-filter:blur(25px);
+        }
+        .modal-inner {
+            position:relative;
+            display:flex; align-items:center; justify-content:center;
+        }
+        /* Halo rings around modal image */
+        .modal-inner::before, .modal-inner::after {
+            content:'';
+            position:absolute;
+            border-radius:50%;
+            border:1px solid;
+            pointer-events:none;
+            animation:haloSpin 6s linear infinite;
+        }
+        .modal-inner::before {
+            width:calc(100% + 60px); height:calc(100% + 60px);
+            border-color:rgba(255,215,0,0.4);
+        }
+        .modal-inner::after {
+            width:calc(100% + 100px); height:calc(100% + 100px);
+            border-color:rgba(176,107,255,0.3);
+            animation-direction:reverse;
+        }
+        @keyframes haloSpin { to{transform:rotate(360deg)} }
+
+        #modal img {
+            max-width:88%; max-height:82%;
+            border-radius:18px;
+            box-shadow:
+                0 0 70px rgba(255,215,0,0.5),
+                0 0 40px rgba(176,107,255,0.4),
+                0 25px 90px rgba(0,0,0,0.9);
+            object-fit:contain;
+            border:3px solid var(--fae-gold);
+            animation:modalBurst 0.5s cubic-bezier(0.23,1,0.32,1);
+        }
+        @keyframes modalBurst {
+            from { opacity:0; transform:scale(0.75) rotateY(-15deg); }
+            to   { opacity:1; transform:scale(1) rotateY(0); }
+        }
+
+        /* ══ GRID MODE ══ */
+        body.grid-mode #main-scroller { overflow-y:auto !important; -webkit-overflow-scrolling:touch; }
+        body.grid-mode #gallery-scene {
+            animation:none !important;
+            transform:none !important;
+            position:relative !important;
+            top:0 !important; left:0 !important;
+            width:100% !important; height:auto !important;
+            display:grid !important;
+            grid-template-columns:repeat(auto-fill, minmax(155px,1fr)) !important;
+            gap:18px !important;
+            padding:110px 20px 220px 20px !important;
+        }
+        body.grid-mode .fae-card {
+            position:relative !important;
+            left:0 !important; top:0 !important;
+            width:100% !important; height:auto !important;
+            aspect-ratio:1/1.26 !important;
+            transform:none !important;
+            filter:brightness(1) saturate(1) !important;
+            opacity:1 !important;
+            animation:none !important;
+        }
+        @media(max-width:768px){
+            body.grid-mode #gallery-scene {
+                grid-template-columns:repeat(auto-fill, minmax(115px,1fr)) !important;
+                gap:12px !important;
+            }
+        }
+
+        /* ══ ENTRANCE ══ */
+        @keyframes fadeUp {
+            from{opacity:0;transform:translateY(18px)}
+            to{opacity:1;transform:translateY(0)}
+        }
+        .nav          { animation:fadeUp 0.8s ease-out both; }
+        .page-title   { animation:fadeUp 0.9s ease-out 0.1s both; }
+        .bottom-nav   { animation:fadeUp 1s ease-out 0.2s both; }
+        #p-cont       { animation:fadeUp 1.1s ease-out 0.3s both; }
+    </style>
+</head>
+<body>
+
+    <!-- Aurora background canvas -->
+    <canvas id="aurora-canvas"></canvas>
+
+    <!-- Starfield -->
+    <div id="starfield"></div>
+
+    <!-- Magic dust -->
+    <div id="magic-dust"></div>
+
+    <!-- Crystal orbs -->
+    <div class="crystal-orb co1"></div>
+    <div class="crystal-orb co2"></div>
+    <div class="crystal-orb co3"></div>
+    <div class="crystal-orb co4"></div>
+
+    <!-- Fairy rings -->
+    <div class="fairy-ring fr1"></div>
+    <div class="fairy-ring fr2"></div>
+    <div class="fairy-ring fr3"></div>
+
+    <!-- Wisp beam -->
+    <div class="wisp-beam"></div>
+
+    <!-- Rune corners -->
+    <div class="rune-corner rc-tl"></div>
+    <div class="rune-corner rc-tr"></div>
+    <div class="rune-corner rc-bl"></div>
+    <div class="rune-corner rc-br"></div>
+
+    <!-- Nav -->
+    <nav class="nav">
+        <a href="index.html" class="fae-btn">✦ EXIT</a>
+    </nav>
+
+    <!-- Page title -->
+    <div class="page-title">
+        <h1>✦ JUNE FANTASIA ✦</h1>
+        <div class="subtitle">2026 · Chapter VI</div>
+    </div>
+
+    <!-- Gallery -->
+    <div id="main-scroller">
+        <div id="gallery-scene"></div>
+    </div>
+
+    <!-- Bottom controls -->
+    <div class="bottom-nav">
+        <button id="heart-btn" title="Toggle Grid View">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+        </button>
+        <button id="oracle-btn">✦ Oracle Vision ✦</button>
+    </div>
+
+    <!-- Music Player -->
+    <div id="p-cont" class="paused">
+        <div class="p-header">
+            <div class="eq"><span></span><span></span><span></span><span></span></div>
+            <div class="np-c">
+                <div class="np-label">✦ Enchanted Melody</div>
+                <div id="t-name">READY</div>
+            </div>
+        </div>
+        <div class="ctrls">
+            <button onclick="prevT()">◁◁</button>
+            <button id="p-btn" onclick="toggleP()">PLAY</button>
+            <button onclick="stopT()">■</button>
+            <button onclick="nextT()">▷▷</button>
+        </div>
+        <div class="s-list" id="pl"></div>
+        <audio id="audio" playsinline></audio>
+    </div>
+
+    <!-- Oracle Scan Overlay -->
+    <div id="proc-ov">
+        <div class="oracle-ring"></div>
+        <div class="oracle-text">✦ ORACLE SCANNING ✦</div>
+        <div class="loader" style="position:relative;">
+            <div class="l-bar" id="p-bar"></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" onclick="closeM()">
+        <div class="modal-inner">
+            <img id="m-img" src="" alt="">
+        </div>
+    </div>
+
+<script>
+/* ══ AURORA CANVAS ══ */
+(function(){
+    const c = document.getElementById('aurora-canvas');
+    const ctx = c.getContext('2d');
+    let W, H, t = 0;
+    function resize(){ W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+    function draw(){
+        ctx.clearRect(0,0,W,H);
+        t += 0.003;
+        // Aurora bands
+        const bands = [
+            {y:0.25, color:'rgba(176,107,255,0.08)', freq:0.6, amp:80},
+            {y:0.45, color:'rgba(255,215,0,0.05)',   freq:0.4, amp:100},
+            {y:0.65, color:'rgba(94,236,216,0.07)',  freq:0.7, amp:70},
+            {y:0.35, color:'rgba(255,133,179,0.06)', freq:0.5, amp:90},
+        ];
+        bands.forEach(b => {
+            ctx.beginPath();
+            ctx.moveTo(0, H * b.y);
+            for(let x = 0; x <= W; x += 8){
+                const y = H * b.y + Math.sin(x * 0.005 * b.freq + t) * b.amp
+                                  + Math.sin(x * 0.008 * b.freq + t * 1.3) * b.amp * 0.5;
+                ctx.lineTo(x, y);
+            }
+            ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+            ctx.fillStyle = b.color;
+            ctx.fill();
+        });
+        requestAnimationFrame(draw);
+    }
+    window.addEventListener('resize', resize);
+    resize(); draw();
+})();
+
+/* ══ STARFIELD ══ */
+(function(){
+    const sf = document.getElementById('starfield');
+    const n = window.innerWidth < 768 ? 80 : 150;
+    for(let i = 0; i < n; i++){
+        const s = document.createElement('div');
+        s.className = 'star';
+        const sz = Math.random() * 2.5 + 0.5;
+        s.style.cssText = `
+            left:${Math.random()*100}%;
+            top:${Math.random()*100}%;
+            width:${sz}px; height:${sz}px;
+            --dur:${(2 + Math.random()*4).toFixed(1)}s;
+            --del:${(Math.random()*5).toFixed(1)}s;
+            opacity:${Math.random()};
+        `;
+        // Colorize some stars
+        const colors = ['rgba(255,215,0,0.9)','rgba(176,107,255,0.9)','rgba(94,236,216,0.9)','white'];
+        s.style.background = colors[Math.floor(Math.random()*colors.length)];
+        sf.appendChild(s);
+    }
+})();
+
+/* ══ MAGIC DUST ══ */
+(function(){
+    const md = document.getElementById('magic-dust');
+    const colors = ['#ffd700','#ff85b3','#b06bff','#5eecd8','#ff9de2'];
+    for(let i = 0; i < 55; i++){
+        const m = document.createElement('div');
+        m.className = 'mote';
+        const sz = Math.random() * 60 + 15;
+        const col = colors[Math.floor(Math.random()*colors.length)];
+        m.style.cssText = `
+            left:${Math.random()*100}vw;
+            width:${sz}px; height:${sz}px;
+            background:radial-gradient(circle, ${col}55, transparent 70%);
+            --dur:${(18+Math.random()*14).toFixed(1)}s;
+            --del:${(Math.random()*-25).toFixed(1)}s;
+            --tx:${((Math.random()-0.5)*280).toFixed(0)}px;
+        `;
+        md.appendChild(m);
+    }
+})();
+
+/* ══ GALLERY ══ */
+const scene  = document.getElementById('gallery-scene');
+const modal  = document.getElementById('modal');
+const mImg   = document.getElementById('m-img');
+let cards    = [];
+
+async function loadG(){
+    try {
+        const res  = await fetch('images/photos.json');
+        const data = await res.json();
+        const photos = data["2026_06"] || [];
+
+        photos.forEach((f, i) => {
+            const src  = `images/2026-06/${f}`;
+            const card = document.createElement('div');
+            card.className = 'fae-card';
+            card.innerHTML = `<img src="${src}" loading="lazy" alt="">`;
+
+            // Spread across 10%–90% of viewport width, centered
+            const leftPct  = 10 + Math.random() * 80;
+            const dur      = 14 + Math.random() * 18;
+            const delay    = Math.random() * -32;
+            const tilt     = (Math.random() - 0.5) * 6;
+
+            card.style.cssText += `
+                left:${leftPct}%;
+                margin-left:calc(var(--card-w) * -0.5);
+                animation-duration:${dur}s;
+                animation-delay:${delay}s;
+                --tilt:${tilt}deg;
+            `;
+
+            card.onclick = e => { e.stopPropagation(); openM(src); };
+            scene.appendChild(card);
+            cards.push(card);
+        });
+    } catch(e){ console.error(e); }
+}
+
+/* ══ GRID TOGGLE ══ */
+document.getElementById('heart-btn').onclick = () => {
+    const isGrid = document.body.classList.toggle('grid-mode');
+    document.getElementById('main-scroller').scrollTo({top:0,behavior:'smooth'});
+    if(audio.paused) toggleP();
+};
+
+/* ══ ORACLE SCAN ══ */
+document.getElementById('oracle-btn').onclick = () => {
+    const ov  = document.getElementById('proc-ov');
+    const bar = document.getElementById('p-bar');
+    ov.style.display = 'flex';
+    bar.style.width  = '0%';
+    setTimeout(() => bar.style.width = '100%', 80);
+    setTimeout(() => {
+        ov.style.display = 'none';
+        if(cards.length){
+            const pick = cards[Math.floor(Math.random()*cards.length)];
+            openM(pick.querySelector('img').src);
+        }
+    }, 1600);
+};
+
+/* ══ MODAL ══ */
+function openM(s){ mImg.src = s; modal.style.display = 'flex'; }
+function closeM(){ modal.style.display = 'none'; }
+
+/* ══ AUDIO ══ */
+const audio  = document.getElementById('audio');
+const pBtn   = document.getElementById('p-btn');
+const tName  = document.getElementById('t-name');
+const plEl   = document.getElementById('pl');
+const pCont  = document.getElementById('p-cont');
+const tracks = typeof EXTERNAL_TRACKS !== 'undefined' ? EXTERNAL_TRACKS : [];
+let cIdx = 0;
+
+function initP(){
+    if(!tracks.length) return;
+    plEl.innerHTML = tracks.map((t,i) =>
+        `<div class="s-item ${i===cIdx?'active':''}" onclick="loadT(${i})">
+            ${String(i+1).padStart(2,'0')} ${t.replace('.mp3','').replace(/_/g,' ')}
+        </div>`
+    ).join('');
+    loadT(cIdx, false);
+}
+function loadT(idx, a=true){
+    cIdx = idx;
+    audio.src = `music/${tracks[idx]}`;
+    tName.innerText = tracks[idx].replace('.mp3','').replace(/_/g,' ');
+    document.querySelectorAll('.s-item').forEach((it,i) => it.classList.toggle('active', i===idx));
+    if(a) audio.play().then(() => updUI(true)).catch(()=>{});
+    else  updUI(false);
+}
+function toggleP(){
+    if(audio.paused) audio.play().then(() => updUI(true)).catch(()=>{});
+    else { audio.pause(); updUI(false); }
+}
+function updUI(p){ pCont.classList.toggle('paused',!p); pBtn.innerText = p?"PAUSE":"PLAY"; }
+function nextT(){ cIdx=(cIdx+1)%tracks.length; loadT(cIdx); }
+function prevT(){ cIdx=(cIdx-1+tracks.length)%tracks.length; loadT(cIdx); }
+function stopT(){ audio.pause(); audio.currentTime=0; updUI(false); }
+audio.onended = nextT;
+audio.volume = 0.5;
+
+/* ══ DRAG PLAYER ══ */
+let isDrag=false, sX,sY,iX,iY;
+const ds = e => {
+    if(e.target.closest('button')||e.target.closest('.s-list')) return;
+    isDrag=true;
+    const p = e.type.includes('touch')?e.touches[0]:e;
+    const r = pCont.getBoundingClientRect();
+    sX=p.clientX; sY=p.clientY; iX=r.left; iY=r.top;
+};
+const dm = e => {
+    if(!isDrag) return;
+    const p = e.type.includes('touch')?e.touches[0]:e;
+    pCont.style.left=`${iX+(p.clientX-sX)}px`;
+    pCont.style.top=`${iY+(p.clientY-sY)}px`;
+    pCont.style.right='auto'; pCont.style.bottom='auto';
+};
+pCont.addEventListener('mousedown', ds);
+pCont.addEventListener('touchstart', ds, {passive:true});
+window.addEventListener('mousemove', dm);
+window.addEventListener('touchmove', dm, {passive:false});
+window.addEventListener('mouseup', ()=>isDrag=false);
+window.addEventListener('touchend', ()=>isDrag=false);
+
+/* ══ INIT ══ */
+window.onload = () => {
+    loadG();
+    initP();
+};
+</script>
+</body>
+</html>
